@@ -9,5 +9,4 @@ public record UserUpdateRequest (
         LocalDate fechaNacimiento,
         String email,
         String contrasenna
-
 ){}

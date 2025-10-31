@@ -82,4 +82,13 @@ public class UserService {
         return userPersistence.save(user);
     }
 
+    public void deleteUser(String rut) {
+        User user = userPersistence.findById(rut)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Usuario no encontrado"
+                ));
+
+        userPersistence.delete(user);
+    }
+
 }
