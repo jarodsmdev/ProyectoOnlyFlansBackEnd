@@ -32,7 +32,7 @@ public class User {
     private LocalDate fechaNacimiento;
     
     @Column(unique = true)
-    @Schema(description = "Correo electronico del usuario.", example = "astrid@gmail.com")
+    @Schema(description = "Correo electrónico del usuario.", example = "astrid@gmail.com")
     private String email;
 
     @Schema(description = "Contraseña del usuario.", example = "churrete22costero")
