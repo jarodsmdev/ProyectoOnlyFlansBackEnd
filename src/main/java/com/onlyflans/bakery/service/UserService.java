@@ -6,6 +6,7 @@ import com.onlyflans.bakery.model.User.User;
 import com.onlyflans.bakery.persistence.IUserPersistence;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,8 +19,10 @@ public class UserService {
     /* Es mejor usar final que la anotacion Autowired, debido a su inmutabilidad
     * y a la facilidad de los tests */
     private final IUserPersistence userPersistence;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(IUserPersistence userPersistence){
+    public UserService(IUserPersistence userPersistence, PasswordEncoder passwordEncoder){
+        this.passwordEncoder = passwordEncoder;
         this.userPersistence = userPersistence;
     }
 
@@ -51,7 +54,10 @@ public class UserService {
         user.setApellidos(createRequest.apellidos());
         user.setFechaNacimiento(createRequest.fechaNacimiento());
         user.setEmail(createRequest.email());
-        user.setContrasenna(createRequest.contrasenna());
+
+        // Se encripta la contraseña
+        String contrasennaEncriptada = passwordEncoder.encode(createRequest.contrasenna());
+        user.setContrasenna(contrasennaEncriptada);
 
         return userPersistence.save(user);
     }
@@ -75,8 +81,11 @@ public class UserService {
         if (updateRequest.email() != null) {
             user.setEmail(updateRequest.email());
         }
+
+        // Encriptar la nueva contraseña
         if (updateRequest.contrasenna() != null) {
-            user.setContrasenna(updateRequest.contrasenna());
+            String contrasennaEncriptada = passwordEncoder.encode(updateRequest.contrasenna());
+            user.setContrasenna(contrasennaEncriptada);
         }
 
         return userPersistence.save(user);
@@ -89,6 +98,18 @@ public class UserService {
                 ));
 
         userPersistence.delete(user);
+    }
+
+    // verificar login
+    public User checkCredentials(String rut, String contrasenaPlana){
+        User user = userPersistence.findById(rut)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(contrasenaPlana, user.getContrasenna())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
+        }
+
+        return user;
     }
 
 }
