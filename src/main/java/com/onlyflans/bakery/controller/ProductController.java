@@ -5,6 +5,7 @@ import com.onlyflans.bakery.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,9 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product){
-        return ResponseEntity.ok(productService.createProduct(product));
+        Product saved = productService.createProduct(product);
+        URI location = URI.create("/products/" + saved.getCodigo());
+        return ResponseEntity.created(location).body(saved);
     }
 
     @GetMapping
