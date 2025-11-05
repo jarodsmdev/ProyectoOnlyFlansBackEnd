@@ -15,10 +15,19 @@ import java.util.UUID;
 public class OrderDetail {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
-    private UUID orderId;
-    private String productoCodigo;
-    private int cantidad;
-    private int subtotal;
+    @Column(length = 36)
+    private String id = UUID.randomUUID().toString();
+
+    /* Orden que pertenece este detalle */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDER_ID")
+    private Order order;
+
+    /* Producto que pertenece este detalle */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRODUCTO_CODIGO", referencedColumnName = "CODIGO")
+    private Product product;
+
+    private Integer cantidad;
+    private Integer subtotal;
 }

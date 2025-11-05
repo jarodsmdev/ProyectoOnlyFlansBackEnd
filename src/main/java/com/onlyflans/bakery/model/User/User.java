@@ -1,13 +1,14 @@
 package com.onlyflans.bakery.model.User;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.onlyflans.bakery.model.Order;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 
@@ -37,4 +38,8 @@ public class User {
 
     @Schema(description = "Contraseña del usuario.", example = "churrete22costero")
     private String contrasenna;
+
+    /* Relacion con ordenes */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders = new ArrayList<>();
 }
