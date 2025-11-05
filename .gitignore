@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+###
+wallet
+.env
+
 ### STS ###
 .apt_generated
 .classpath

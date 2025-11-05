@@ -1,10 +1,11 @@
 package com.onlyflans.bakery.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -30,4 +31,8 @@ public class Product {
     
     @Schema(description = "URL de la imagen del producto.", example = "https://brigams.pe/wp-content/uploads/chocolate-2.jpg")
     private String url;
+
+    /* Detalles de compra donde aparece el producto */
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 }
