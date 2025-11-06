@@ -24,7 +24,7 @@ public class OrderService {
         return orderPersistence.findAll();
     }
 
-    public Order getOrder(UUID id){
+    public Order getOrder(String id){
         return orderPersistence.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -42,7 +42,7 @@ public class OrderService {
 
     }
 
-    public Order updateOrder(UUID id, Order order){
+    public Order updateOrder(String id, Order order){
         Order orderToUpdate = orderPersistence.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Orden no encontrada"
@@ -58,14 +58,14 @@ public class OrderService {
         if (order.getTotal() != null){
             orderToUpdate.setTotal(order.getTotal());
         }
-        if (order.getRutUsuario() != null){
-            orderToUpdate.setRutUsuario(order.getRutUsuario());
+        if (order.getUser() != null){
+            orderToUpdate.setUser(order.getUser());
         }
 
         return orderPersistence.save(orderToUpdate);
     }
 
-    public void deleteOrder(UUID id){
+    public void deleteOrder(String id){
         Order order = orderPersistence.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Orden no encontrada"
