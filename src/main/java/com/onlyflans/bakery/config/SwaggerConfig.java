@@ -14,7 +14,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         String descripcion = """
             Documentación de la API para el proyecto de la página <b>OnlyFlans 🍰</b><br><br>
-            <b>Desarrollado por:</b>Andrés Ortega, Leonel Briones y Luis Maulen<br>
+            <b>Desarrollado por:</b>Leonel Briones, Luis Maulen y Andres Ortega<br>
             <a href='mailto:contacto@onlyflans.cl'>contacto@onlyflans.cl</a> | 
             <a href='https://onlyflans2.netlify.app' target="_blank">https://onlyflans2.netlify.app</a>
             """;

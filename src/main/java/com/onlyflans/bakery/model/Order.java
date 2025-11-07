@@ -37,12 +37,12 @@ public class Order {
     /* Usuario que pertenece a la orden */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RUT_USUARIO", referencedColumnName = "RUT")
-    @Schema(description = "Usuario asociado a la orden.")
+    @Schema(description = "Usuario asociado a la orden.", hidden = true)
     private User user;
 
     /* Relacion con detalle de compra */
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Schema(description = "Lista de detalles de la orden.")
+    @Schema(description = "Lista de detalles de la orden.", hidden = true)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
 }
