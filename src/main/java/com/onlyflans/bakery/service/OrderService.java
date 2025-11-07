@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -23,6 +22,7 @@ public class OrderService {
     public List<Order> getAllOrders(){
         return orderPersistence.findAll();
     }
+
 
     public Order getOrder(String id){
         return orderPersistence.findById(id)

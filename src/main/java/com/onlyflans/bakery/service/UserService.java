@@ -1,5 +1,6 @@
 package com.onlyflans.bakery.service;
 
+import com.onlyflans.bakery.model.UserRole;
 import com.onlyflans.bakery.model.dto.UserCreateRequest;
 import com.onlyflans.bakery.model.dto.UserUpdateRequest;
 import com.onlyflans.bakery.model.User;
@@ -54,6 +55,9 @@ public class UserService {
         user.setApellidos(createRequest.apellidos());
         user.setFechaNacimiento(createRequest.fechaNacimiento());
         user.setEmail(createRequest.email());
+
+        // Asignar el rol como "NORMAL" por defecto
+        user.setUserRole(UserRole.NORMAL);
 
         // Se encripta la contraseña
         String contrasennaEncriptada = passwordEncoder.encode(createRequest.contrasenna());
@@ -110,6 +114,20 @@ public class UserService {
         }
 
         return user;
+    }
+
+    /**
+     * Método exclusivo para cambiar el rol de un usuario.
+     * Requiere que el metodo sea autenticado con ADMIN.
+     */
+    public User updateRole(String rut, UserRole newRole) {
+        User user = userPersistence.findById(rut)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Usuario no encontrado"
+                ));
+
+        user.setUserRole(newRole); // Modificar el rol
+        return userPersistence.save(user);
     }
 
 }

@@ -2,6 +2,7 @@ package com.onlyflans.bakery.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -12,9 +13,12 @@ import org.springframework.security.web.SecurityFilterChain;
  * Clase de configuración para Spring Security.
  * @Configuration indica que esta clase es una fuente de definiciones de beans.
  * @EnableWebSecurity habilita la configuración de seguridad web de Spring Security.
+ * @EnableMethodSecurity permite la seguridad a nivel de método mediante anotaciones.
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // Al agregar esta anotación, se permite el uso de anotaciones
+// de seguridad como PreAuthorize o PostAuthorize en los métodos de los controladores. 
 public class SecurityConfig {
 
     /**
