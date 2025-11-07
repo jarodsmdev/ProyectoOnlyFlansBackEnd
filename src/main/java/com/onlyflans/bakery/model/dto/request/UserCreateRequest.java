@@ -1,4 +1,4 @@
-package com.onlyflans.bakery.model.dto;
+package com.onlyflans.bakery.model.dto.request;
 
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;

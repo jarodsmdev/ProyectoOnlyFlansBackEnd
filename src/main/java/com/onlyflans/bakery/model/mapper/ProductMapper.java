@@ -1,7 +1,7 @@
 package com.onlyflans.bakery.model.mapper;
 
 import com.onlyflans.bakery.model.Product;
-import com.onlyflans.bakery.model.dto.ProductDTO;
+import com.onlyflans.bakery.model.dto.response.ProductDTO;
 
 public class ProductMapper {
 
