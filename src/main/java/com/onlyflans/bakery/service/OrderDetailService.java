@@ -26,7 +26,7 @@ public class OrderDetailService {
         return orderDetailPersistence.findAll();
     }
 
-    public OrderDetail getOrderDetail(UUID id){
+    public OrderDetail getOrderDetail(String id){
         return orderDetailPersistence.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -44,18 +44,18 @@ public class OrderDetailService {
 
     }
 
-    public OrderDetail updateOrderDetail(UUID id, OrderDetail orderDetail){
+    public OrderDetail updateOrderDetail(String id, OrderDetail orderDetail){
         OrderDetail orderDetailToUpdate = orderDetailPersistence.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Detalle de orden no encontrada"
                 ));
 
         // Actualizar solo campos con datos
-        if (orderDetail.getOrderId() != null){
-            orderDetailToUpdate.setOrderId(orderDetail.getOrderId());
+        if (orderDetail.getId() != null){
+            orderDetailToUpdate.setId(orderDetail.getId());
         }
-        if (orderDetail.getProductoCodigo() != null){
-            orderDetailToUpdate.setProductoCodigo(orderDetail.getProductoCodigo());
+        if (orderDetail.getProduct() != null){
+            orderDetailToUpdate.setProduct(orderDetail.getProduct());
         }
         if (orderDetail.getCantidad() != null){
             orderDetailToUpdate.setCantidad(orderDetail.getCantidad());
@@ -67,7 +67,7 @@ public class OrderDetailService {
         return orderDetailPersistence.save(orderDetailToUpdate);
     }
 
-    public void deleteOrderDetail(UUID id){
+    public void deleteOrderDetail(String id){
         OrderDetail orderDetail = orderDetailPersistence.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Orden no encontrada"

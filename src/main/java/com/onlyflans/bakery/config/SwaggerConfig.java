@@ -1,7 +1,6 @@
 // Swagger by Luis :3
 
 package com.onlyflans.bakery.config;
-import io.swagger.v3.oas.models.info.Contact;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,5 +1,6 @@
 package com.onlyflans.bakery.controller;
 
+import com.onlyflans.bakery.model.User.DTO.UserRoleUpdateRequest;
 import com.onlyflans.bakery.model.User.DTO.UserCreateRequest;
 import com.onlyflans.bakery.model.User.DTO.UserUpdateRequest;
 import com.onlyflans.bakery.model.User.User;
@@ -15,9 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public class UserController {
                 : ResponseEntity.ok(users);
     }
 
-    // GET
+    // GET (usuario por rut)
     @GetMapping("/{rut}")
     @Operation(summary = "Obtener un usuario especifico.", description = "Obtiene el usuario que se especifica con su rut")
     @ApiResponses(value = {
@@ -83,6 +84,19 @@ public class UserController {
 
     // POST
     @PostMapping
+    @Operation(summary = "Crear un nuevo usuario.", description = "Crea un nuevo usuario en la base de datos con la información proporcionada.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Usuario creado correctamente.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class),
+                            examples = @ExampleObject(
+                                    name = "Ejemplo de usuario creado",
+                                    value = "{\"rut\": \"19291648-8\", \"nombres\": \"Juan Miguel\", \"apellidos\": \"Perez Aguirre\", \"fechaNacimiento\": \"2001-11-10\", \"email\": \" paguirre@gmail.com\", \"contrasenna\": \"Contraseña123\"}"
+                            )});
+
     public ResponseEntity<User> createUser(@RequestBody @Valid UserCreateRequest createRequest) {
         User createdUser = userService.createUser(createRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
@@ -117,4 +131,19 @@ public class UserController {
         userService.deleteUser(rut);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PatchMapping("/{rut}/role")
+    @PreAuthorize("hasAuthority('ADMIN')") // La Seguridad a Nivel de Método
+    public ResponseEntity<User> updateRole(
+            @PathVariable String rut,
+            @RequestBody UserRoleUpdateRequest request) {
+        
+        // Llama al Service para ejecutar la lógica de cambio de rol
+        User updatedUser = userService.updateRole(rut, request.newRole());
+        
+        // Retorna el resultado (por ejemplo, 200 OK con el usuario actualizado)
+        return ResponseEntity.ok(updatedUser);
+    }
+
 }
