@@ -1,7 +1,6 @@
-package com.onlyflans.bakery.model.User.DTO;
+package com.onlyflans.bakery.model.dto;
 
 import jakarta.validation.constraints.*;
-
 import java.time.LocalDate;
 
 public record UserCreateRequest(

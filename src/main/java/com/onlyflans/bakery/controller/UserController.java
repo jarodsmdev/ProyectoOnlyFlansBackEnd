@@ -1,9 +1,8 @@
 package com.onlyflans.bakery.controller;
 
-import com.onlyflans.bakery.model.User.DTO.UserRoleUpdateRequest;
-import com.onlyflans.bakery.model.User.DTO.UserCreateRequest;
-import com.onlyflans.bakery.model.User.DTO.UserUpdateRequest;
-import com.onlyflans.bakery.model.User.User;
+import com.onlyflans.bakery.model.dto.UserCreateRequest;
+import com.onlyflans.bakery.model.dto.UserUpdateRequest;
+import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.model.dto.LoginRequest;
 import com.onlyflans.bakery.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -208,11 +207,11 @@ public class UserController {
         })
     public ResponseEntity<User> updateRole(
             @Parameter(description = "Rut del usuario para modificar su rol.", required = true, example = "20351648-K") @PathVariable String rut,
-            @RequestBody UserRoleUpdateRequest request) {
-        
+            @RequestBody com.onlyflans.bakery.model.User.DTO.UserRoleUpdateRequest request) {
+
         // Llama al Service para ejecutar la lógica de cambio de rol
         User updatedUser = userService.updateRole(rut, request.newRole());
-        
+
         // Retorna el resultado (por ejemplo, 200 OK con el usuario actualizado)
         return ResponseEntity.ok(updatedUser);
     }

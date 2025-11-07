@@ -1,4 +1,4 @@
-package com.onlyflans.bakery.model.User;
+package com.onlyflans.bakery.model;
 
 // Clase enum para definir los roles de usuario
 public enum UserRole {
