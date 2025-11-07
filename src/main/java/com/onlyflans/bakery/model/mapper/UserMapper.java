@@ -1,8 +1,8 @@
 package com.onlyflans.bakery.model.mapper;
 
 import com.onlyflans.bakery.model.User;
-import com.onlyflans.bakery.model.dto.OrderSummaryDTO;
-import com.onlyflans.bakery.model.dto.UserDTO;
+import com.onlyflans.bakery.model.dto.response.OrderSummaryDTO;
+import com.onlyflans.bakery.model.dto.response.UserDTO;
 
 import java.util.stream.Collectors;
 

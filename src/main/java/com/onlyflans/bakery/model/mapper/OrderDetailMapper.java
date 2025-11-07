@@ -1,7 +1,7 @@
 package com.onlyflans.bakery.model.mapper;
 
 import com.onlyflans.bakery.model.OrderDetail;
-import com.onlyflans.bakery.model.dto.OrderDetailDTO;
+import com.onlyflans.bakery.model.dto.response.OrderDetailDTO;
 
 public class OrderDetailMapper {
 

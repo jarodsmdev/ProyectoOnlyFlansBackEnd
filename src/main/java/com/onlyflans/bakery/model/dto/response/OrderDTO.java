@@ -1,4 +1,4 @@
-package com.onlyflans.bakery.model.dto;
+package com.onlyflans.bakery.model.dto.response;
 
 import lombok.Data;
 import java.time.LocalDate;

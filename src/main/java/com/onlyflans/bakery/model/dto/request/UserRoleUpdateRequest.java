@@ -1,4 +1,4 @@
-package com.onlyflans.bakery.model.User.DTO;
+package com.onlyflans.bakery.model.dto.request;
 
 import com.onlyflans.bakery.model.User.UserRole;
 
