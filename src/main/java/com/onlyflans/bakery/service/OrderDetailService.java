@@ -1,16 +1,12 @@
 package com.onlyflans.bakery.service;
 
-import com.onlyflans.bakery.model.Order;
 import com.onlyflans.bakery.model.OrderDetail;
 import com.onlyflans.bakery.persistence.IOrderDetailPersistence;
-import com.onlyflans.bakery.persistence.IOrderPersistence;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -40,6 +36,15 @@ public class OrderDetailService {
                     HttpStatus.CONFLICT, "Detalle de orden ya existe"
             );
         }
+
+        if (orderDetail.getOrder() == null || orderDetail.getProduct() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Falta información de orden o producto");
+        }
+       
+        // Enlazar ambas partes de la relación
+        orderDetail.getOrder().getOrderDetails().add(orderDetail); // El detalle se agrega a la lista dentro del objeto Order.
+        orderDetail.setOrder(orderDetail.getOrder()); // Asegura que la referencia del detalle a la orden esté puesta.
+ 
         return orderDetailPersistence.save(orderDetail);
 
     }
@@ -51,8 +56,11 @@ public class OrderDetailService {
                 ));
 
         // Actualizar solo campos con datos
-        if (orderDetail.getId() != null){
-            orderDetailToUpdate.setId(orderDetail.getId());
+//      if (orderDetail.getId() != null){
+//            orderDetailToUpdate.setId(orderDetail.getId());
+
+        if (orderDetail.getOrder() != null){
+            orderDetailToUpdate.setOrder(orderDetail.getOrder());
         }
         if (orderDetail.getProduct() != null){
             orderDetailToUpdate.setProduct(orderDetail.getProduct());
@@ -70,7 +78,7 @@ public class OrderDetailService {
     public void deleteOrderDetail(String id){
         OrderDetail orderDetail = orderDetailPersistence.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Orden no encontrada"
+                        HttpStatus.NOT_FOUND, "Detalle de orden no encontrada"
                 ));
         orderDetailPersistence.delete(orderDetail);
     }
