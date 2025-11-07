@@ -39,7 +39,13 @@ public class User {
     @Schema(description = "Contraseña del usuario.", example = "churrete22costero")
     private String contrasenna;
 
+    // Atributo para el rol
+    @Enumerated(EnumType.STRING) // Le dice a JPA que guarde el nombre del Enum como String ("NORMAL", "ADMIN")
+    @Schema(description = "Rol/tipo de usuario (NORMAL o ADMIN).", example = "NORMAL")
+    private UserRole userRole;
+
     /* Relacion con ordenes */
+    @Schema(description = "Lista de órdenes asociadas al usuario.")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 }

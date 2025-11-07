@@ -34,5 +34,6 @@ public class Product {
 
     /* Detalles de compra donde aparece el producto */
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Schema(description = "Lista de detalles de compra que incluyen el producto.", hidden = true)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 }
