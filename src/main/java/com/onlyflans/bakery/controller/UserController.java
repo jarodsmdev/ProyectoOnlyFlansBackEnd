@@ -1,8 +1,8 @@
 package com.onlyflans.bakery.controller;
 
-import com.onlyflans.bakery.model.User.DTO.UserCreateRequest;
-import com.onlyflans.bakery.model.User.DTO.UserUpdateRequest;
-import com.onlyflans.bakery.model.User.User;
+import com.onlyflans.bakery.model.dto.UserCreateRequest;
+import com.onlyflans.bakery.model.dto.UserUpdateRequest;
+import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.model.dto.LoginRequest;
 import com.onlyflans.bakery.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

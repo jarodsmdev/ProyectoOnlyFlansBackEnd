@@ -1,8 +1,8 @@
 package com.onlyflans.bakery.service;
 
-import com.onlyflans.bakery.model.User.DTO.UserCreateRequest;
-import com.onlyflans.bakery.model.User.DTO.UserUpdateRequest;
-import com.onlyflans.bakery.model.User.User;
+import com.onlyflans.bakery.model.dto.UserCreateRequest;
+import com.onlyflans.bakery.model.dto.UserUpdateRequest;
+import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.persistence.IUserPersistence;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.onlyflans.bakery.persistence;
 
-import com.onlyflans.bakery.model.User.User;
+import com.onlyflans.bakery.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

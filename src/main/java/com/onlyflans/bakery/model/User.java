@@ -1,6 +1,5 @@
-package com.onlyflans.bakery.model.User;
+package com.onlyflans.bakery.model;
 
-import com.onlyflans.bakery.model.Order;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

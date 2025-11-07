@@ -1,4 +1,4 @@
-package com.onlyflans.bakery.model.User.DTO;
+package com.onlyflans.bakery.model.dto;
 
 
 import java.time.LocalDate;
