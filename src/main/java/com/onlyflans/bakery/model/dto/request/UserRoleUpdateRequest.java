@@ -1,6 +1,6 @@
 package com.onlyflans.bakery.model.dto.request;
 
-import com.onlyflans.bakery.model.User.UserRole;
+import com.onlyflans.bakery.model.UserRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
