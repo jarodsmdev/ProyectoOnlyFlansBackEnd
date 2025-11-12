@@ -1,21 +1,40 @@
 package com.onlyflans.bakery.service;
 
+import com.onlyflans.bakery.model.Order;
 import com.onlyflans.bakery.model.OrderDetail;
+import com.onlyflans.bakery.model.Product;
+import com.onlyflans.bakery.model.dto.request.OrderItemRequest;
+import com.onlyflans.bakery.model.dto.response.OrderDetailDTO;
+import com.onlyflans.bakery.model.mapper.OrderDetailMapper;
 import com.onlyflans.bakery.persistence.IOrderDetailPersistence;
+import com.onlyflans.bakery.persistence.IOrderPersistence;
+import com.onlyflans.bakery.persistence.IProductPersistence;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
 public class OrderDetailService {
 
+    /* Se agregan dependecias de Order y Product para verificar la existencia
+    * real en la bd de orden y producto antes de crear el detalle */
     private final IOrderDetailPersistence orderDetailPersistence;
+    private final IOrderPersistence orderPersistence;
+    private final IProductPersistence productPersistence;
 
-    public OrderDetailService(IOrderDetailPersistence orderDetailPersistence) {
+    public OrderDetailService(
+            IOrderDetailPersistence orderDetailPersistence,
+            IOrderPersistence orderPersistence,
+            IProductPersistence productPersistence
+    ) {
         this.orderDetailPersistence = orderDetailPersistence;
+        this.orderPersistence = orderPersistence;
+        this.productPersistence = productPersistence;
     }
 
     public List<OrderDetail> getAllOrderDetails(){
@@ -30,49 +49,64 @@ public class OrderDetailService {
                 ));
     }
 
-    public OrderDetail createOrderDetail(OrderDetail orderDetail){
-        if (orderDetailPersistence.existsById(orderDetail.getId())){
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "Detalle de orden ya existe"
-            );
-        }
+    public OrderDetailDTO createOrderDetail(String orderId, OrderItemRequest request){
+        // verificar que la orden exista
+        Order order = orderPersistence.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Orden no encontrada"
+                ));
 
-        if (orderDetail.getOrder() == null || orderDetail.getProduct() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Falta información de orden o producto");
-        }
-       
-        // Enlazar ambas partes de la relación
-        orderDetail.getOrder().getOrderDetails().add(orderDetail); // El detalle se agrega a la lista dentro del objeto Order.
-        orderDetail.setOrder(orderDetail.getOrder()); // Asegura que la referencia del detalle a la orden esté puesta.
- 
-        return orderDetailPersistence.save(orderDetail);
+        // verificar que el producto exista
+        Product product = productPersistence.findById(request.productoCodigo())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Producto no encontrado"
+                ));
+
+        // con todo ya listo, creamos el detalle de orden
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setId(UUID.randomUUID().toString());
+        orderDetail.setOrder(order);
+        orderDetail.setProduct(product);
+        orderDetail.setCantidad(request.cantidad());
+        orderDetail.setSubtotal(product.getPrecio() * request.cantidad());
+
+        // añadimos el detalle de orden a la orden que pertenece
+        order.getOrderDetails().add(orderDetail);
+
+        // guardar
+        orderDetailPersistence.save(orderDetail);
+
+        // lo convertimos a DTO y lo devolvemos
+        return OrderDetailMapper.toDTO(orderDetail);
+
 
     }
 
-    public OrderDetail updateOrderDetail(String id, OrderDetail orderDetail){
-        OrderDetail orderDetailToUpdate = orderDetailPersistence.findById(id)
+    public OrderDetailDTO updateOrderDetail(String orderItemId, OrderItemRequest request) {
+        // verificar que el detalle de orden exista
+        OrderDetail orderDetail = orderDetailPersistence.findById(orderItemId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Detalle de orden no encontrada"
                 ));
 
-        // Actualizar solo campos con datos
-//      if (orderDetail.getId() != null){
-//            orderDetailToUpdate.setId(orderDetail.getId());
+        // buscamos el producto que ya existe
+        Product product = productPersistence.findById(orderDetail.getProduct().getCodigo())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Producto no encontrado"
+                ));
 
-        if (orderDetail.getOrder() != null){
-            orderDetailToUpdate.setOrder(orderDetail.getOrder());
-        }
-        if (orderDetail.getProduct() != null){
-            orderDetailToUpdate.setProduct(orderDetail.getProduct());
-        }
-        if (orderDetail.getCantidad() != null){
-            orderDetailToUpdate.setCantidad(orderDetail.getCantidad());
-        }
-        if (orderDetail.getSubtotal() != null){
-            orderDetailToUpdate.setSubtotal(orderDetail.getSubtotal());
+        // Actualizar solo campos con datos, en este caso, solo cantidad
+        if (request.cantidad() != null){
+            // si cambia la cantidad, cambia el subtotal
+            orderDetail.setCantidad(request.cantidad());
+            orderDetail.setSubtotal(product.getPrecio() * request.cantidad());
         }
 
-        return orderDetailPersistence.save(orderDetailToUpdate);
+        //guardar
+        orderDetailPersistence.save(orderDetail);
+
+        // devolver como DTO
+        return OrderDetailMapper.toDTO(orderDetail);
     }
 
     public void deleteOrderDetail(String id){
