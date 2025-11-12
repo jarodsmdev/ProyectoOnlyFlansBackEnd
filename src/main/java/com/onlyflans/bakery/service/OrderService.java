@@ -95,6 +95,7 @@ public class OrderService {
 
         order.setTotal(total);
         orderPersistence.save(order);
+
         return OrderMapper.toDTO(order);
 
     }
