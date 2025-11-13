@@ -119,7 +119,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor durante el proceso de autenticación de usuario.", content = @Content)
     })
     public ResponseEntity<User> login(@RequestBody LoginRequest loginRequest){
-        User user = userService.checkCredentials(loginRequest.rut(), loginRequest.contrasenna());
+        User user = userService.checkCredentials(loginRequest.email(), loginRequest.password());
 
         return ResponseEntity.ok(user);
     }

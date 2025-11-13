@@ -2,6 +2,7 @@ package com.onlyflans.bakery.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "Users")
-@Data
+@Data @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
