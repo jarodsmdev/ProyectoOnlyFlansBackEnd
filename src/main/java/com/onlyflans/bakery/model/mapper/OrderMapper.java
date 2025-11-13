@@ -18,20 +18,16 @@ public class OrderMapper {
         dto.setFecha(order.getFecha());
         dto.setEstado(order.getEstado());
         dto.setTotal(order.getTotal());
-        dto.setRutUsuario(order.getUser().getRut());
+        dto.setRutUsuario(order.getUser() != null ? order.getUser().getRut() : null);
 
+        // Pasamos order.getId() explícitamente a cada OrderDetailMapper
         dto.setOrderDetails(
                 order.getOrderDetails() == null ?
                         Collections.emptyList() :
-                        order.getOrderDetails().stream().map(orderDetail -> {
-                            OrderDetailDTO detailDTO =  new OrderDetailDTO();
-                            detailDTO.setId(orderDetail.getId());
-                            detailDTO.setProductoCodigo(orderDetail.getProduct().getCodigo());
-                            detailDTO.setNombreProducto(orderDetail.getProduct().getNombre());
-                            detailDTO.setCantidad(orderDetail.getCantidad());
-                            detailDTO.setSubtotal(orderDetail.getSubtotal());
-                            return detailDTO;
-                        }).collect(Collectors.toList())
+                        order.getOrderDetails()
+                                .stream()
+                                .map(orderDetail -> OrderDetailMapper.toDTO(orderDetail, order.getId()))
+                                .collect(Collectors.toList())
         );
 
 

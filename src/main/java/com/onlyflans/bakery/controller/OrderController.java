@@ -1,6 +1,9 @@
 package com.onlyflans.bakery.controller;
 
 import com.onlyflans.bakery.model.Order;
+import com.onlyflans.bakery.model.dto.request.OrderCreateRequest;
+import com.onlyflans.bakery.model.dto.request.OrderUpdateRequest;
+import com.onlyflans.bakery.model.dto.response.OrderDTO;
 import com.onlyflans.bakery.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,8 +40,8 @@ public class OrderController {
             @ApiResponse(responseCode = "204", description = "No hay órdenes disponibles en el sistema.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar recuperar las órdenes.", content = @Content)
     })
-    public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
+    public ResponseEntity<List<OrderDTO>> getAllOrders() {
+        List<OrderDTO> orders = orderService.getAllOrders();
         return orders.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(orders);
@@ -51,8 +54,8 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "La orden con el ID especificado no existe.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar recuperar la orden.", content = @Content)
     })
-    public ResponseEntity<Order> getOrder(@PathVariable String id) {
-        Order order = orderService.getOrder(id);
+    public ResponseEntity<OrderDTO> getOrder(@PathVariable String id) {
+        OrderDTO order = orderService.getOrder(id);
         return order == null
                 ? ResponseEntity.notFound().build()
                 : ResponseEntity.ok(order);
@@ -66,9 +69,25 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Solicitud inválida. Verifique los datos proporcionados para la creación de la orden.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar crear la orden.", content = @Content)
     })
-    public ResponseEntity<Order> createOrder(@RequestBody @Valid Order order) {
-        Order orderCreated = orderService.createOrder(order);
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody @Valid OrderCreateRequest request) {
+        OrderDTO orderCreated = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderCreated);
+    }
+
+    // 🟧 PUT: actualizar una orden
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar una orden existente", description = "Permite modificar el estado o total de una orden específica.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Orden actualizada exitosamente.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderDTO.class))),
+            @ApiResponse(responseCode = "404", description = "La orden con el ID especificado no existe.", content = @Content)
+    })
+    public ResponseEntity<OrderDTO> updateOrder(
+            @PathVariable String id,
+            @RequestBody @Valid OrderUpdateRequest request
+    ) {
+        OrderDTO updatedOrder = orderService.updateOrder(id, request);
+        return ResponseEntity.ok(updatedOrder);
     }
 
     // DELETE
