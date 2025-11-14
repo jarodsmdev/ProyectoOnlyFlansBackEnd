@@ -30,4 +30,17 @@ public class UserMapper {
 
         return dto;
     }
+
+    public static User toEntity(UserDTO dto){
+        if (dto == null) return null;
+
+        User user = new User();
+        user.setRut(dto.getRut());
+        user.setNombres(dto.getNombres());
+        user.setApellidos(dto.getApellidos());
+        user.setFechaNacimiento(dto.getFechaNacimiento());
+        user.setEmail(dto.getEmail());
+
+        return user;
+    }
 }
