@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthService {
     private final TokenRepository tokenRepository;
-    //private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final IUserPersistence userEntityRepository;
@@ -29,7 +27,7 @@ public class AuthService {
 
     public TokenDTOResponse register(UserCreateRequest request){
         var user = userService.createUser(request);
-        var savedUser = userEntityRepository.save(user); //? guarda el usuario???
+        var savedUser = userEntityRepository.save(user);
         var jwtToken = jwtService.generateToken(savedUser);
         var refreshToken = jwtService.generateRefreshToken(savedUser);
 
