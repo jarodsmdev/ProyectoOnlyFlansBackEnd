@@ -1,0 +1,19 @@
+services:
+  bakery: # Servicio de la API de la pasteleria OnlyFlans
+    build: # Construcción de la imagen
+      context: . # Contexto de construcción
+      dockerfile: Dockerfile # Dockerfile a utilizar
+    container_name: bakery_app # Nombre del contenedor
+    ports: # Puertos a exponer
+      - "80:8080"
+    command: ["java", "-jar", "/app/app.jar"] # Comando para ejecutar la aplicación
+
+    env_file:
+      - .env
+
+    networks:
+      - bakery_network # Red personalizada
+
+networks:
+  bakery_network: # Definición de la red personalizada
+    driver: bridge
