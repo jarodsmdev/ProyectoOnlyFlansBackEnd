@@ -5,6 +5,7 @@ import com.onlyflans.bakery.model.dto.request.UserRoleUpdateRequest;
 import com.onlyflans.bakery.model.dto.request.UserUpdateRequest;
 import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.model.dto.request.LoginRequest;
+import com.onlyflans.bakery.model.dto.response.UserDTO;
 import com.onlyflans.bakery.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,8 +54,8 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "No se encontraron usuarios en la base de datos.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al listar los usuarios.", content = @Content)
     })
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
         return users.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(users);
@@ -76,9 +77,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "El Usuario no existe en la base de datos o el rut es incorrecto.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al buscar el usuario.", content = @Content)
     })
-    public ResponseEntity<User> getUser(
+    public ResponseEntity<UserDTO> getUser(
         @Parameter(description = "Rut del usuario a buscar", required = true, example = "20881702-K") @PathVariable String rut) {
-        User user = userService.getUser(rut);
+        UserDTO user = userService.getUser(rut);
         return ResponseEntity.ok(user);
     }
 
@@ -98,8 +99,8 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Creacion de usuario inválida. Verifique los datos proporcionados.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar crear el usuario.", content = @Content)
     })
-    public ResponseEntity<User> createUser(@RequestBody @Valid UserCreateRequest createRequest) {
-        User createdUser = userService.createUser(createRequest);
+    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserCreateRequest createRequest) {
+        UserDTO createdUser = userService.createUser(createRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
@@ -118,10 +119,10 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Credenciales inválidas. No se pudo autenticar al usuario.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor durante el proceso de autenticación de usuario.", content = @Content)
     })
-    public ResponseEntity<User> login(@RequestBody LoginRequest loginRequest){
-        User user = userService.checkCredentials(loginRequest.email(), loginRequest.password());
+    public ResponseEntity<UserDTO> login(@RequestBody LoginRequest loginRequest){
+        UserDTO userDTO = userService.checkCredentials(loginRequest.email(), loginRequest.password());
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userDTO);
     }
 
     // PUT
@@ -141,10 +142,10 @@ public class UserController {
                 @ApiResponse(responseCode = "404", description = "El Usuario no existe en la base de datos o el rut es incorrecto.", content = @Content),
                 @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar actualizar el usuario.", content = @Content)
         })
-    public ResponseEntity<User> updateUser(
+    public ResponseEntity<UserDTO> updateUser(
         @Parameter(description = "Rut del usuario a actualizar", required = true, example = "20351648-K") @PathVariable String rut,
         @RequestBody @Valid UserUpdateRequest updateRequest) {
-        User updatedUser = userService.updateUser(rut, updateRequest);
+        UserDTO updatedUser = userService.updateUser(rut, updateRequest);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -165,10 +166,10 @@ public class UserController {
                 @ApiResponse(responseCode = "404", description = "El Usuario no existe en la base de datos o el rut es incorrecto.", content = @Content),
                 @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar actualizar parcialmente el usuario.", content = @Content)
         })
-    public ResponseEntity<User> partialUpdateUser(
+    public ResponseEntity<UserDTO> partialUpdateUser(
         @Parameter(description = "Rut del usuario a actualizar (parcialmente)", required = true, example = "20351648-K") @PathVariable String rut,
         @RequestBody UserUpdateRequest updateRequest) {
-        User updatedUser = userService.updateUser(rut, updateRequest);
+        UserDTO updatedUser = userService.updateUser(rut, updateRequest);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -206,12 +207,12 @@ public class UserController {
                 @ApiResponse(responseCode = "403", description = "Acceso denegado. Solo los administradores pueden cambiar roles de usuarios.", content = @Content),
                 @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar actualizar el rol del usuario.", content = @Content)
         })
-    public ResponseEntity<User> updateRole(
+    public ResponseEntity<UserDTO> updateRole(
             @Parameter(description = "Rut del usuario para modificar su rol.", required = true, example = "20351648-K") @PathVariable String rut,
             @RequestBody UserRoleUpdateRequest request) {
 
         // Llama al Service para ejecutar la lógica de cambio de rol
-        User updatedUser = userService.updateRole(rut, request.newRole());
+        UserDTO updatedUser = userService.updateRole(rut, request.newRole());
 
         // Retorna el resultado (por ejemplo, 200 OK con el usuario actualizado)
         return ResponseEntity.ok(updatedUser);

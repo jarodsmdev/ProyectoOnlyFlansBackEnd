@@ -8,7 +8,6 @@ import com.onlyflans.bakery.model.dto.request.OrderCreateRequest;
 import com.onlyflans.bakery.model.dto.request.OrderUpdateRequest;
 import com.onlyflans.bakery.model.dto.response.OrderDTO;
 import com.onlyflans.bakery.model.mapper.OrderMapper;
-import com.onlyflans.bakery.persistence.IOrderDetailPersistence;
 import com.onlyflans.bakery.persistence.IOrderPersistence;
 import com.onlyflans.bakery.persistence.IProductPersistence;
 import com.onlyflans.bakery.persistence.IUserPersistence;

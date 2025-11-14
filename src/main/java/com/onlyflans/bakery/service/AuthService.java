@@ -8,11 +8,13 @@ import com.onlyflans.bakery.model.dto.request.UserCreateRequest;
 import com.onlyflans.bakery.persistence.IUserPersistence;
 import com.onlyflans.bakery.persistence.token.TokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,7 +30,11 @@ public class AuthService {
 
     public TokenDTOResponse register(UserCreateRequest request){
         var user = userService.createUser(request);
-        var savedUser = userEntityRepository.save(user); //? guarda el usuario???
+        User savedUser = userEntityRepository.findById(user.getRut())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Usuario creado pero entidad no encontrada"
+                )); //? guarda el usuario???
         var jwtToken = jwtService.generateToken(savedUser);
         var refreshToken = jwtService.generateRefreshToken(savedUser);
 
