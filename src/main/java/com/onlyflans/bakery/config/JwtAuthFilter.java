@@ -10,6 +10,7 @@ import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.persistence.IUserPersistence;
 import com.onlyflans.bakery.persistence.token.TokenRepository;
 import com.onlyflans.bakery.service.JwtService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,6 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -116,10 +119,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        final var authToken = new UsernamePasswordAuthenticationToken(
+        // EXTRAER ROL DESDE EL JWT
+        Claims claims = jwtService.getClaims(jwtToken);
+        String role = claims.get("role", String.class);
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+
+        // CREAR AUTENTICACIÓN CON EL ROL DEL TOKEN
+        final UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
-                userDetails.getAuthorities()
+                List.of(authority)
         );
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
