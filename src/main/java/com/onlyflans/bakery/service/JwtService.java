@@ -33,15 +33,6 @@ public class JwtService {
         return buildToken(user,refreshExpiration);
     }
 
-    public boolean isTokenExpired(final String token){
-        return extractExpiration(token).before(new Date());
-    }
-
-    public boolean isTokenValid(final String token, final User user){
-        final String username = extractUsername(token);
-        return (username.equals(user.getEmail()) && !isTokenExpired(token));
-    }
-
     public String buildToken(final User user, final Long expiration){
         return Jwts.builder()
                 .id(user.getRut()) //user.getId().toString()
@@ -59,6 +50,15 @@ public class JwtService {
 
     public Date extractExpiration(final String token){
         return getClaims(token).getExpiration();
+    }
+
+    public boolean isTokenExpired(final String token){
+        return extractExpiration(token).before(new Date());
+    }
+
+    public boolean isTokenValid(final String token, final User user){
+        final String username = extractUsername(token);
+        return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 
     public SecretKey getSignKey() {

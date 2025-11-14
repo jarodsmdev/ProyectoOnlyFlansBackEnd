@@ -1,5 +1,6 @@
 package com.onlyflans.bakery.service;
 
+import com.onlyflans.bakery.exception.InvalidTokenException;
 import com.onlyflans.bakery.model.Token;
 import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.model.dto.TokenDTOResponse;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthService {
     private final TokenRepository tokenRepository;
-    private final PasswordEncoder passwordEncoder;
+    //private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final IUserPersistence userEntityRepository;
@@ -77,26 +78,44 @@ public class AuthService {
 
     public TokenDTOResponse refreshToken(final String authHeader){
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            throw new IllegalArgumentException("Invalid Bearer Token");
+            throw new IllegalArgumentException("Token no es de tipo Bearer o no ha sido proporcionado");
         }
 
         final String refreshToken = authHeader.substring(7);
+
         final String userEmail = jwtService.extractUsername(refreshToken);
 
         if(userEmail == null){
-            throw new IllegalArgumentException("There is not user email");
+            throw new IllegalArgumentException("Refresh token no contiene un usuario válido");
         }
 
         final User user = userEntityRepository.findByEmail(userEmail)
                 .orElseThrow( () -> new UsernameNotFoundException(userEmail));
 
         if(!jwtService.isTokenValid(refreshToken, user)){
-            throw new IllegalArgumentException("Invalid Refresh Token");
+            throw new InvalidTokenException("Refresh token no válido");
         }
 
-        final String accessToken = jwtService.generateToken(user);
+        // Generar nuevo token de acceso
+        final String newAccessToken = jwtService.generateToken(user);
+
         revokeAllUserTokens(user);
-        saveUserToken(user, accessToken);
-        return new TokenDTOResponse(accessToken, refreshToken);
+        saveUserToken(user, newAccessToken);
+        return new TokenDTOResponse(newAccessToken, refreshToken);
+    }
+
+    public void logout(final String authHeader) {
+        String token = authHeader.substring(7);
+
+        Token storedToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidTokenException("Token no válido"));
+
+        if (storedToken.isExpired() || storedToken.isRevoked()) {
+            throw new InvalidTokenException("Token ya se encuentra expirado o revocado");
+        }
+
+        storedToken.setExpired(true);
+        storedToken.setRevoked(true);
+        tokenRepository.save(storedToken);
     }
 }

@@ -1,10 +1,16 @@
 package com.onlyflans.bakery.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.onlyflans.bakery.exception.dto.ErrorResponse;
 import com.onlyflans.bakery.model.Token;
 import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.persistence.IUserPersistence;
 import com.onlyflans.bakery.persistence.token.TokenRepository;
 import com.onlyflans.bakery.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +27,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Optional;
 
 @Component
@@ -51,7 +59,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         final String jwtToken = authHeader.substring(7);
-        final String userEmail = jwtService.extractUsername(jwtToken);
+
+        String userEmail;
+
+        try {
+            userEmail = jwtService.extractUsername(jwtToken);
+        } catch (ExpiredJwtException ex) {
+            ErrorResponse error = new ErrorResponse(
+                    LocalDateTime.now(),
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Unauthorized",
+                    "Token expired",
+                    request.getRequestURI(),
+                    Collections.emptyList()
+            );
+
+            writeErrorResponse(response, error);
+            return;
+        } catch (Exception ex) {
+            ErrorResponse error = new ErrorResponse(
+                    LocalDateTime.now(),
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Unauthorized",
+                    "Invalid or malformed token",
+                    request.getRequestURI(),
+                    Collections.emptyList()
+            );
+
+            writeErrorResponse(response, error);
+            return;
+        }
 
         if(userEmail == null || SecurityContextHolder.getContext().getAuthentication() != null){
             filterChain.doFilter(request, response);
@@ -90,5 +127,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
 
+    }
+    private void writeErrorResponse(HttpServletResponse response, ErrorResponse error)
+            throws IOException {
+
+        response.setStatus(error.status());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        ObjectMapper mapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .build();
+
+        mapper.writeValue(response.getWriter(), error);
     }
 }
