@@ -37,6 +37,7 @@ public class UserController {
 
     // GET
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Obtener todos los usuarios registrados.", description = "Obtiene una lista con todos los usuarios registrados en la base de datos.")
     @ApiResponses(value = {
             @ApiResponse(

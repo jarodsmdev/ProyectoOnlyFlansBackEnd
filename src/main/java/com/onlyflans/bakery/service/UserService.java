@@ -7,8 +7,11 @@ import com.onlyflans.bakery.model.User;
 import com.onlyflans.bakery.model.dto.response.UserDTO;
 import com.onlyflans.bakery.model.mapper.UserMapper;
 import com.onlyflans.bakery.persistence.IUserPersistence;
+import com.onlyflans.bakery.security.SecurityUser;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -149,5 +152,12 @@ public class UserService {
 
         return UserMapper.toDTO(user);
     }
+
+    public UserDetails loadUserByUsername(String email) {
+        User user = userPersistence.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no econtrado con email: " + email));
+        return new SecurityUser(user);
+    }
+
 
 }

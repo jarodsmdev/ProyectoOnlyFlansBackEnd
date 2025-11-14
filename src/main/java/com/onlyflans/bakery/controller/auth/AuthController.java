@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,8 +36,30 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenDTOResponse> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) final String authHeader){
+    public ResponseEntity<TokenDTOResponse> refreshToken(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) final String authHeader){
+        if (authHeader == null) {
+            throw new IllegalArgumentException("El header Authorization es obligatorio");
+        }
         final TokenDTOResponse token = authService.refreshToken(authHeader);
         return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) final String authHeader){
+        if(authHeader == null){
+            throw new IllegalArgumentException("El header Authorization es obligatorio");
+        }
+        authService.logout(authHeader);
+        return ResponseEntity.ok(
+                Map.of(
+                        "timestamp", System.currentTimeMillis(),
+                        "status", 200,
+                        "error", "OK",
+                        "message", "Logout successful",
+                        "path", "/auth/logout"
+                )
+        );
     }
 }
