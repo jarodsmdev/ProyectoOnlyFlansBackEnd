@@ -1,6 +1,7 @@
 package com.onlyflans.bakery.controller;
 
 import com.onlyflans.bakery.model.Product;
+import com.onlyflans.bakery.model.dto.response.ProductDTO;
 import com.onlyflans.bakery.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -35,8 +36,8 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos para crear el producto"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar crear el producto")
     })
-    public ResponseEntity<Product> createProduct(@RequestBody Product product){
-        Product saved = productService.createProduct(product);
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody Product product){
+        ProductDTO saved = productService.createProduct(product);
         URI location = URI.create("/products/" + saved.getCodigo());
         return ResponseEntity.created(location).body(saved);
     }
@@ -54,7 +55,7 @@ public class ProductController {
                     )),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar recuperar los productos")
     })
-    public ResponseEntity<List<Product>> getAllProducts(){
+    public ResponseEntity<List<ProductDTO>> getAllProducts(){
         return ResponseEntity.ok(productService.getAllProducts());
     }
 }
