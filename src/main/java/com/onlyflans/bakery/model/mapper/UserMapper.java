@@ -1,6 +1,7 @@
 package com.onlyflans.bakery.model.mapper;
 
 import com.onlyflans.bakery.model.User;
+import com.onlyflans.bakery.model.UserRole;
 import com.onlyflans.bakery.model.dto.response.OrderSummaryDTO;
 import com.onlyflans.bakery.model.dto.response.UserDTO;
 
@@ -17,6 +18,7 @@ public class UserMapper {
         dto.setApellidos(user.getApellidos());
         dto.setFechaNacimiento(user.getFechaNacimiento());
         dto.setEmail(user.getEmail());
+        dto.setUserRole(user.getUserRole().name());
 
         if (user.getOrders() != null){
             dto.setOrders(user.getOrders().stream().map(order -> {
@@ -40,6 +42,11 @@ public class UserMapper {
         user.setApellidos(dto.getApellidos());
         user.setFechaNacimiento(dto.getFechaNacimiento());
         user.setEmail(dto.getEmail());
+        
+        // Convertir el String del DTO al Enum de la entidad.
+        if (dto.getUserRole() != null) {
+            user.setUserRole(UserRole.valueOf(dto.getUserRole()));
+        }
 
         return user;
     }

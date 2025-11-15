@@ -11,5 +11,6 @@ public class UserDTO {
     private String apellidos;
     private LocalDate fechaNacimiento;
     private String email;
+    private String userRole;
     private List<OrderSummaryDTO> orders;
 }
