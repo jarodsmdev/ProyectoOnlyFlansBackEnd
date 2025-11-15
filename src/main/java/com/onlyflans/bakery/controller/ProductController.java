@@ -1,8 +1,12 @@
 package com.onlyflans.bakery.controller;
 
 import com.onlyflans.bakery.model.Product;
+import com.onlyflans.bakery.model.dto.request.ProductCreateRequest;
+import com.onlyflans.bakery.model.dto.request.ProductUpdateRequest;
+import com.onlyflans.bakery.model.dto.response.ProductDTO;
 import com.onlyflans.bakery.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -10,12 +14,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -35,8 +42,8 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos para crear el producto"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar crear el producto")
     })
-    public ResponseEntity<Product> createProduct(@RequestBody Product product){
-        Product saved = productService.createProduct(product);
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductCreateRequest newProduct){
+        ProductDTO saved = productService.createProduct(newProduct);
         URI location = URI.create("/products/" + saved.getCodigo());
         return ResponseEntity.created(location).body(saved);
     }
@@ -54,7 +61,70 @@ public class ProductController {
                     )),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar recuperar los productos")
     })
-    public ResponseEntity<List<Product>> getAllProducts(){
+    public ResponseEntity<List<ProductDTO>> getAllProducts(){
         return ResponseEntity.ok(productService.getAllProducts());
     }
+
+    @GetMapping("/{codigo}")
+    @Operation(summary = "Obtener un producto por su código", description = "Recupera los detalles de un producto específico utilizando su código")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Producto recuperado exitosamente", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Product.class),
+                    examples = @ExampleObject(
+                            name = "Ejemplo producto",
+                            value = "{\"Codigo\": \"TC001\", \"Categoria\": \"Tortas Cuadradas\", \"nombre\": \"Torta Cuadrada de Chocolate\", \"Descripcion\": \"Deliciosa torta de chocolate con capas de ganache y un toque de avellanas. Personalizable con mensajes especiales\", \"Precio\": \"45000\", \"Url imagen\": \"https://brigams.pe/wp-content/uploads/chocolate-2.jpg\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "400", description = "Código de producto inválido"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado para recuperar el producto"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado con el código proporcionado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar recuperar el producto")
+    })
+    public ResponseEntity<ProductDTO> getProductById(
+        @Parameter(description = "Codigo del producto para buscar.", required = true, example = "TC001") @PathVariable String codigo){ {
+    
+        ProductDTO productDTO = productService.getProductById(codigo);
+        return ResponseEntity.ok(productDTO);
+    }}
+    
+
+
+    @PutMapping("/{codigo}")
+    @Operation(summary = "Actualizar un producto existente", description = "Actualiza los detalles de un producto existente en la panadería OnlyFlans")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos para actualizar el producto"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado para actualizar el producto"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado para actualizar"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar actualizar el producto")
+    })
+    public ResponseEntity<ProductDTO> updateProduct(
+        @Parameter(description = "Codigo del producto a actualizar.", required = true, example = "TC001") @PathVariable String codigo, 
+        @Valid @RequestBody ProductUpdateRequest product) {
+        
+        ProductDTO updatedProduct = productService.updateProduct(codigo, product);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+
+    @DeleteMapping("/{codigo}")
+    @Operation(summary = "Eliminar un producto", description = "Elimina un producto existente de la panadería OnlyFlans")
+    @ApiResponses(value = { 
+            @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Código de producto inválido para eliminar"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado para eliminar el producto"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado para eliminar"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar eliminar el producto")
+    })
+    public ResponseEntity<Void> deleteProduct(
+        @Parameter(description = "Codigo del producto a eliminar.", required = true, example = "TC001") @PathVariable String codigo){
+
+        productService.deleteProduct(codigo);
+        
+        // Devuelve 204 No Content explícitamente
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
