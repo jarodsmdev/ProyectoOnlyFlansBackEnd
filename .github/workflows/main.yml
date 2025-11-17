@@ -1,0 +1,67 @@
+name: deploy bakend OnlyFlans
+
+on:
+    push:
+        branches:
+        - main
+
+jobs:
+
+  deploy:
+    name: Deploy Backend OnlyFlans to AWS EC2
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create dir on server
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: ${{ secrets.EC2_SSH_PORT }}
+        script: |
+          mkdir -p /home/ubuntu/app
+
+    - name: Copy files to server
+      uses: burnett01/rsync-deployments@7.0.2
+      with:
+        switches: "-avz --delete"
+        path: "./"
+        remote_host: ${{ secrets.EC2_HOST }}
+        remote_user: ${{ secrets.EC2_USER }}
+        remote_path: "/home/ubuntu/app"
+        remote_port: ${{ secrets.EC2_SSH_PORT }}
+
+    - name: Create .env file on server
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: ${{ secrets.EC2_SSH_PORT }}
+        script: |
+          cat <<EOF > /home/ubuntu/app/ProyectoOnlyFlansBackEnd/.env
+          URL_DATABASE=${{ secrets.URL_DATABASE }}
+          DRIVER_DATABASE=${{ secrets.DRIVER_DATABASE }}
+          USER_DATABASE=${{ secrets.USER_DATABASE }}
+          PASSWORD_DATABASE=${{ secrets.PASSWORD_DATABASE }}
+          DIALECT_DATABASE=${{ secrets.DIALECT_DATABASE }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_ACCESS_EXPIRATION_MS=${{ secrets.JWT_ACCESS_EXPIRATION_MS }}
+          JWT_REFRESH_EXPIRATION_MS=${{ secrets.JWT_REFRESH_EXPIRATION_MS }}
+          EOF
+
+    - name: Docker compose up on server
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: ${{ secrets.EC2_SSH_PORT }}
+        script: |
+          cd /home/ubuntu/app/ProyectoOnlyFlansBackEnd
+          docker-compose down
+          docker-compose up -d --build
+
