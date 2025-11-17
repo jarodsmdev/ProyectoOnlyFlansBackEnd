@@ -3,8 +3,6 @@ package com.onlyflans.bakery.model.dto.request;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
-import com.onlyflans.bakery.model.UserRole;
-
 public record UserCreateRequest(
         @NotBlank(message = "El RUT es obligatorio")
         String rut,
@@ -27,8 +25,5 @@ public record UserCreateRequest(
 
         @NotBlank(message = "La contraseña es obligatoria")
         @Size(min = 6)
-        String contrasenna,
-
-        @NotNull(message = "El rol de usuario es obligatorio")
-        UserRole userRole
+        String contrasenna
 ) {}
