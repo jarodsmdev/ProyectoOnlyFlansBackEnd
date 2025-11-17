@@ -43,7 +43,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: ${{ secrets.EC2_SSH_PORT }}
         script: |
-          cat <<EOF > /home/ubuntu/app/ProyectoOnlyFlansBackEnd/.env
+          cat <<EOF > /home/ubuntu/app/.env
           URL_DATABASE=${{ secrets.URL_DATABASE }}
           DRIVER_DATABASE=${{ secrets.DRIVER_DATABASE }}
           USER_DATABASE=${{ secrets.USER_DATABASE }}
@@ -62,7 +62,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: ${{ secrets.EC2_SSH_PORT }}
         script: |
-          cd /home/ubuntu/app/ProyectoOnlyFlansBackEnd
+          cd /home/ubuntu/app
           docker-compose down
           docker-compose up -d --build
 
