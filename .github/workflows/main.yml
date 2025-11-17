@@ -33,6 +33,7 @@ jobs:
         remote_user: ${{ secrets.EC2_USER }}
         remote_path: "/home/ubuntu/app"
         remote_port: ${{ secrets.EC2_SSH_PORT }}
+        remote_key: ${{ secrets.EC2_SSH_KEY }}
 
     - name: Create .env file on server
       uses: appleboy/ssh-action@v1
