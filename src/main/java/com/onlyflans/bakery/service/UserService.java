@@ -68,7 +68,7 @@ public class UserService {
         user.setEmail(createRequest.email());
 
         // Asignar el rol como "NORMAL" por defecto
-        user.setUserRole(UserRole.NORMAL);
+        user.setUserRole(createRequest.userRole());
 
         // Se encripta la contraseña
         String contrasennaEncriptada = passwordEncoder.encode(createRequest.contrasenna());

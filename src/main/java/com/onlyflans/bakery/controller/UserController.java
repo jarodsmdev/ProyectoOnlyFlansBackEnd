@@ -1,10 +1,9 @@
 package com.onlyflans.bakery.controller;
 
-import com.onlyflans.bakery.model.dto.request.UserCreateRequest;
+
 import com.onlyflans.bakery.model.dto.request.UserRoleUpdateRequest;
 import com.onlyflans.bakery.model.dto.request.UserUpdateRequest;
 import com.onlyflans.bakery.model.User;
-import com.onlyflans.bakery.model.dto.request.LoginRequest;
 import com.onlyflans.bakery.model.dto.response.UserDTO;
 import com.onlyflans.bakery.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +62,8 @@ public class UserController {
 
     // GET (usuario por rut)
     @GetMapping("/{rut}")
+    // Permite el acceso si el usuario es un ADMIN O si el 'rut' de la ruta coincide con el atributo identificador del usuario autenticado (acceso propio).
+    @PreAuthorize("hasRole('ADMIN') or #rut == authentication.name") 
     @Operation(summary = "Obtener un usuario especifico.", description = "Obtiene el usuario que se especifica con su rut")
     @ApiResponses(value = {
             @ApiResponse(
@@ -83,7 +83,7 @@ public class UserController {
         UserDTO user = userService.getUser(rut);
         return ResponseEntity.ok(user);
     }
-
+/* 
     // POST
     @PostMapping
     @Operation(summary = "Crear un nuevo usuario.", description = "Crea un nuevo usuario en la base de datos con la información proporcionada.")
@@ -104,7 +104,9 @@ public class UserController {
         UserDTO createdUser = userService.createUser(createRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
+*/
 
+/*
     @PostMapping("/login")
     @Operation(summary = "Login de usuario.", description = "Verifica las credenciales del usuario para iniciar sesión.")
     @ApiResponses(value = {
@@ -125,9 +127,12 @@ public class UserController {
 
         return ResponseEntity.ok(userDTO);
     }
+*/
 
     // PUT
     @PutMapping("/{rut}")
+    // Permite el acceso si el usuario es un ADMIN O si el 'rut' de la ruta coincide con el atributo identificador del usuario autenticado (acceso propio).
+    @PreAuthorize("hasRole('ADMIN') or #rut == authentication.name")
     @Operation(summary = "Actualizar un usuario existente.", description = "Actualiza la información de un usuario existente en la base de datos segun su rut.")
     @ApiResponses(value = {
             @ApiResponse(
@@ -152,6 +157,8 @@ public class UserController {
 
     // PATCH
     @PatchMapping("/{rut}")
+    // Permite el acceso si el usuario es un ADMIN O si el 'rut' de la ruta coincide con el atributo identificador del usuario autenticado (acceso propio).
+    @PreAuthorize("hasRole('ADMIN') or #rut == authentication.name")
     @Operation(summary = "Actualizar parcialmente un usuario existente.", description = "Actualiza parcialmente la información de un usuario existente en la base de datos segun su rut.")
     @ApiResponses(value = {
             @ApiResponse(
@@ -176,6 +183,8 @@ public class UserController {
 
     // DELETE
     @DeleteMapping("/{rut}")
+    // Permite el acceso si el usuario es un ADMIN O si el 'rut' de la ruta coincide con el atributo identificador del usuario autenticado (acceso propio).
+    @PreAuthorize("hasRole('ADMIN') or #rut == authentication.name")
     @Operation(summary = "Eliminar un usuario existente.", description = "Elimina un usuario existente en la base de datos segun su rut.")
     @ApiResponses(value = {
             @ApiResponse(
