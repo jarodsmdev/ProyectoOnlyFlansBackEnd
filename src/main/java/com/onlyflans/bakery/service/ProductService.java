@@ -1,6 +1,8 @@
 package com.onlyflans.bakery.service;
 
 import com.onlyflans.bakery.model.Product;
+import com.onlyflans.bakery.model.dto.request.ProductCreateRequest;
+import com.onlyflans.bakery.model.dto.request.ProductUpdateRequest;
 import com.onlyflans.bakery.model.dto.response.ProductDTO;
 import com.onlyflans.bakery.model.mapper.ProductMapper;
 import com.onlyflans.bakery.persistence.IProductPersistence;
@@ -37,49 +39,69 @@ public class ProductService {
         return (ProductMapper.toDTO(product));
     }
 
-    public ProductDTO createProduct(Product product) {
-        if(productPersistence.existsById(product.getCodigo())){
+    public ProductDTO createProduct(ProductCreateRequest newProduct) {
+        // Verificar si ya existe el código
+        if(productPersistence.existsById(newProduct.codigo())){
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "producto ya existe"
+                    HttpStatus.CONFLICT, "Producto con código '" + newProduct.codigo() + "' ya existe"
             );
         }
 
-        productPersistence.save(product);
-        return ProductMapper.toDTO(product);
+        // Mapear DTO a la entidad Product
+        Product product = new Product();
+
+        // Mapear todos los campos del DTO a la Entity
+        product.setCodigo(newProduct.codigo());
+        product.setCategoria(newProduct.categoria());
+        product.setNombre(newProduct.nombre());
+        product.setDescripcion(newProduct.descripcion());
+        product.setPrecio(newProduct.precio());
+        product.setUrl(newProduct.url());
+
+        // Guardar la entidad
+        Product savedEntity = productPersistence.save(product);
+
+        // Devolver el DTO de respuesta
+        return ProductMapper.toDTO(savedEntity);
     }
 
-    public ProductDTO updateProduct(String codigo, Product product){
-        Product productToUpdate = productPersistence.findById(codigo).
-                orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Producto con el codigo '" + codigo + "' no encontrado."
+    public ProductDTO getProductById(String codigo) {
+        Product product = productPersistence.findById(codigo).orElseThrow(() ->
+                new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Producto no encontrado"
                 ));
 
-        if (product.getCategoria() != null){
-            productToUpdate.setCategoria(product.getCategoria());
-        }
-        if (product.getNombre() != null){
-            productToUpdate.setNombre(product.getNombre());
-        }
-        if (product.getDescripcion() != null){
-            productToUpdate.setDescripcion(product.getDescripcion());
-        }
-        if (product.getPrecio() != null){
-            productToUpdate.setPrecio(product.getPrecio());
-        }
-        if (product.getUrl() != null){
-            productToUpdate.setUrl(product.getUrl());
-        }
-
-        productPersistence.save(productToUpdate);
-        return ProductMapper.toDTO(productToUpdate);
+        return ProductMapper.toDTO(product); // Usar el mapper estático
     }
 
-    public void deleteProduct(String codigo){
-        Product product = productPersistence.findById(codigo).
-                orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Producto con el codigo '" + codigo + "' no encontrado."
+    // Actualizar: Recibir Request DTO y Devolver Response DTO
+    public ProductDTO updateProduct(String codigo, ProductUpdateRequest updateProduct) {
+        Product existingProduct = productPersistence.findById(codigo).orElseThrow(() ->
+                new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Producto no encontrado"
                 ));
 
-        productPersistence.delete(product);
+        // Aplicar cambios del DTO al Entity existente
+        existingProduct.setCategoria(updateProduct.categoria());
+        existingProduct.setNombre(updateProduct.nombre());
+        existingProduct.setDescripcion(updateProduct.descripcion());
+        existingProduct.setPrecio(updateProduct.precio());
+        existingProduct.setUrl(updateProduct.url()); // Usar los getters del Request DTO
+
+        Product updatedEntity = productPersistence.save(existingProduct);
+
+        // Devolver el DTO actualizado
+        return ProductMapper.toDTO(updatedEntity);
     }
+
+
+    public void deleteProduct(String codigo) {
+        if(!productPersistence.existsById(codigo)){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Producto no encontrado"
+            );
+        }
+        productPersistence.deleteById(codigo);
+    }
+
 }
