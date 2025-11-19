@@ -9,8 +9,10 @@ import com.onlyflans.bakery.persistence.IProductPersistence;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -18,9 +20,11 @@ import java.util.List;
 public class ProductService {
 
     private final IProductPersistence productPersistence;
+    private final S3Service s3Service;
 
-    public ProductService(IProductPersistence productPersistence) {
+    public ProductService(IProductPersistence productPersistence, S3Service s3Service) {
         this.productPersistence = productPersistence;
+        this.s3Service = s3Service;
     }
 
     /*
@@ -36,7 +40,7 @@ public class ProductService {
                 .toList();
     }
 
-    public ProductDTO createProduct(ProductCreateRequest newProduct) {
+    public ProductDTO createProduct(ProductCreateRequest newProduct, MultipartFile file) throws IOException {
         // Verificar si ya existe el código 
         if(productPersistence.existsById(newProduct.codigo())){
             throw new ResponseStatusException(
@@ -44,6 +48,10 @@ public class ProductService {
             );
         }
 
+        // 1. Subir imagen a S3
+        String url = s3Service.uploadFile(file, "products/" + newProduct.codigo());
+
+        // 2. Crear la entidad producto
         // Mapear DTO a la entidad Product
         Product product = new Product();
         
@@ -53,12 +61,12 @@ public class ProductService {
         product.setNombre(newProduct.nombre());
         product.setDescripcion(newProduct.descripcion());
         product.setPrecio(newProduct.precio());
-        product.setUrl(newProduct.url());
+        product.setUrl(url); // Usar la URL devuelta por S3
 
-        // Guardar la entidad
+        // 3. Guardar la entidad
         Product savedEntity = productPersistence.save(product);
         
-        // Devolver el DTO de respuesta
+        // 4. Devolver el DTO de respuesta
         return ProductMapper.toDTO(savedEntity);
     }
 
@@ -91,7 +99,6 @@ public class ProductService {
         return ProductMapper.toDTO(updatedEntity);
     }
 
-
     public void deleteProduct(String codigo) {
         if(!productPersistence.existsById(codigo)){
             throw new ResponseStatusException(
@@ -100,5 +107,4 @@ public class ProductService {
         }
         productPersistence.deleteById(codigo);
     }
-
 }

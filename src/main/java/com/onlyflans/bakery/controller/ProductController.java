@@ -16,10 +16,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -35,17 +38,38 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping
-    @Operation(summary = "Crear un nuevo producto", description = "Crea un nuevo producto en la panadería OnlyFlans")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Producto creado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos para crear el producto"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar crear el producto")
-    })
-    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductCreateRequest newProduct){
-        ProductDTO saved = productService.createProduct(newProduct);
-        URI location = URI.create("/products/" + saved.getCodigo());
-        return ResponseEntity.created(location).body(saved);
+//    @PostMapping
+//    @Operation(summary = "Crear un nuevo producto", description = "Crea un nuevo producto en la panadería OnlyFlans")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "Producto creado exitosamente"),
+//            @ApiResponse(responseCode = "400", description = "Datos inválidos para crear el producto"),
+//            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar crear el producto")
+//    })
+//    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductCreateRequest newProduct){
+//        ProductDTO saved = productService.createProduct(newProduct);
+//        URI location = URI.create("/products/" + saved.getCodigo());
+//        return ResponseEntity.created(location).body(saved);
+//    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductDTO> createProduct(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("codigo") String codigo,
+            @RequestParam("categoria") String categoria,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("precio") Integer precio) throws IOException {
+
+        ProductCreateRequest newProduct = new ProductCreateRequest(
+                codigo,
+                categoria,
+                nombre,
+                descripcion,
+                precio
+        );
+
+        ProductDTO saved = productService.createProduct(newProduct, file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @GetMapping

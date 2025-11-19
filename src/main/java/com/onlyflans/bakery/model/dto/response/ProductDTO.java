@@ -1,8 +1,8 @@
 package com.onlyflans.bakery.model.dto.response;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Setter @Getter
 public class ProductDTO {
     private String codigo;
     private String categoria;
