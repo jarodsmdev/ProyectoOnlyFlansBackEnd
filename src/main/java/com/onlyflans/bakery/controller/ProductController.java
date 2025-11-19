@@ -1,5 +1,6 @@
 package com.onlyflans.bakery.controller;
 
+import com.onlyflans.bakery.exception.dto.ErrorResponse;
 import com.onlyflans.bakery.model.Product;
 import com.onlyflans.bakery.model.dto.request.ProductCreateRequest;
 import com.onlyflans.bakery.model.dto.request.ProductUpdateRequest;
@@ -7,6 +8,7 @@ import com.onlyflans.bakery.model.dto.response.ProductDTO;
 import com.onlyflans.bakery.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -50,7 +52,75 @@ public class ProductController {
 //        URI location = URI.create("/products/" + saved.getCodigo());
 //        return ResponseEntity.created(location).body(saved);
 //    }
-
+    @Operation(
+            summary = "Crear un nuevo producto",
+            description = "Crea un producto nuevo en el sistema junto con una imagen. "
+                    + "El archivo debe ser una imagen válida (png, jpeg, webp) y no exceder los 5 MB."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Producto creado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ProductDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Solicitud inválida (archivo no permitido, datos incorrectos)",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
+    @Parameters({
+            @Parameter(
+                    name = "file",
+                    description = "Imagen del producto (png, jpg, jpeg, webp). Máximo 5MB.",
+                    required = true,
+                    content = @Content(mediaType = "multipart/form-data")
+            ),
+            @Parameter(
+                    name = "codigo",
+                    description = "Código único del producto",
+                    required = true,
+                    example = "P-500"
+            ),
+            @Parameter(
+                    name = "categoria",
+                    description = "Categoría del producto",
+                    required = true,
+                    example = "pasteles"
+            ),
+            @Parameter(
+                    name = "nombre",
+                    description = "Nombre del producto",
+                    required = true,
+                    example = "Torta de Chocolate"
+            ),
+            @Parameter(
+                    name = "descripcion",
+                    description = "Descripción del producto",
+                    required = true,
+                    example = "Torta cubierta de chocolate belga"
+            ),
+            @Parameter(
+                    name = "precio",
+                    description = "Precio del producto",
+                    required = true,
+                    example = "12990"
+            )
+    })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDTO> createProduct(
             @RequestParam("file") MultipartFile file,
