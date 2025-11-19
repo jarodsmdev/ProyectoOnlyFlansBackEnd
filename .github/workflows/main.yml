@@ -52,6 +52,8 @@ jobs:
             USER_DATABASE=${{ secrets.USER_DATABASE }}
             PASSWORD_DATABASE=${{ secrets.PASSWORD_DATABASE }}
             DIALECT_DATABASE=${{ secrets.DIALECT_DATABASE }}
+            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+            AWS.REGION=${{ secrets.AWS_REGION }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             JWT_ACCESS_EXPIRATION_MS=${{ secrets.JWT_ACCESS_EXPIRATION_MS }}
             JWT_REFRESH_EXPIRATION_MS=${{ secrets.JWT_REFRESH_EXPIRATION_MS }}
