@@ -12,18 +12,18 @@ public record UserCreateRequest(
         String nombres,
 
         @NotBlank(message = "Los apellidos son obligatorios")
-        @Size(min = 2, max = 50)
+        @Size(min = 2, max = 50, message = "Los apellidos deben tener entre {min} y {max} caracteres")
         String apellidos,
 
         @NotNull(message = "La fecha de nacimiento es obligatoria")
-        @Past
+        @Past(message = "La fecha de nacimiento debe ser una fecha pasada")
         LocalDate fechaNacimiento,
 
         @NotBlank(message = "El email es obligatorio")
-        @Email
+        @Email(message = "El email debe tener un formato válido")
         String email,
 
         @NotBlank(message = "La contraseña es obligatoria")
-        @Size(min = 6)
+        @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
         String contrasenna
 ) {}
