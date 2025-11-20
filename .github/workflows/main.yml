@@ -54,8 +54,6 @@ jobs:
             DIALECT_DATABASE=${{ secrets.DIALECT_DATABASE }}
             AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
             AWS_REGION=${{ secrets.AWS_REGION }}
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             JWT_ACCESS_EXPIRATION_MS=${{ secrets.JWT_ACCESS_EXPIRATION_MS }}
             JWT_REFRESH_EXPIRATION_MS=${{ secrets.JWT_REFRESH_EXPIRATION_MS }}
@@ -69,23 +67,23 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_SSH_PORT }}
           script: |
-            # Actualizar e instalar herramientas necesarias
-            sudo apt-get update
-            sudo apt-get install -y ca-certificates curl
-            sudo install -m 0755 -d /etc/apt/keyrings
-            sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-            sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-            # Agregar repositorio de Docker
-            echo \
-              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-              $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable" | \
-              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-            sudo apt-get update
-
-            # Instalar Docker
-            sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+#            # Actualizar e instalar herramientas necesarias
+#            sudo apt-get update -y
+#            sudo apt-get install -y ca-certificates curl
+#            sudo install -m 0755 -d /etc/apt/keyrings
+#            sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+#            sudo chmod a+r /etc/apt/keyrings/docker.asc
+#
+#            # Agregar repositorio de Docker
+#            echo \
+#              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+#              $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable" | \
+#              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+#
+#            sudo apt-get update
+#
+#            # Instalar Docker
+#            sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
             # Iniciar el servicio de Docker
             sudo systemctl start docker
