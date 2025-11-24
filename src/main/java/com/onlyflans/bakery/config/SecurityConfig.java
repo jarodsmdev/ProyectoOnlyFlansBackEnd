@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 /**
  * Clase de configuración para Spring Security.
@@ -62,6 +63,8 @@ public class SecurityConfig {
                 // Configura las reglas de autorización para las solicitudes HTTP.
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(
+                                "/",
+                                "/index.html",
                                 "/auth/**",
                                 "/h2-console/**",
                                 "/v3/api-docs/**",
@@ -91,5 +94,10 @@ public class SecurityConfig {
 
         // Construye y devuelve el objeto SecurityFilterChain.
         return http.build();
+    }
+
+    @Bean
+    public ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
     }
 }

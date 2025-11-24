@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -43,12 +45,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final TokenRepository tokenRepository;
     private final IUserPersistence userEntityRepository;
 
+    private static final List<String> PUBLIC_URLS = List.of(
+            "/api/v1/products",
+            "/auth",
+            "/h2-console",
+            "/v3/api-docs",
+            "/swagger-ui"
+    );
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull  HttpServletResponse response,
             @NonNull  FilterChain filterChain
     ) throws ServletException, IOException {
+
+        // Si la ruta es pública, no hacemos validación JWT
+        if (PUBLIC_URLS.stream().anyMatch(path::startsWith)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if(request.getServletPath().contains("/auth")){
             filterChain.doFilter(request, response);

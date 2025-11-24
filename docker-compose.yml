@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile # Dockerfile a utilizar
     container_name: bakery_app # Nombre del contenedor
     ports: # Puertos a exponer
-      - "80:8080"
+      - "8080:8080"
     command: ["java", "-jar", "/app/app.jar"] # Comando para ejecutar la aplicación
 
     env_file:
