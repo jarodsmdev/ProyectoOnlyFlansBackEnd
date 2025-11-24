@@ -30,7 +30,8 @@ public class CorsConfig {
         // 1. Solo permitir tu frontend real
         config.setAllowedOriginPatterns(List.of(
                 "https://onlyflans2.netlify.app", // URL de producción
-                "http://localhost:*" // Para desarrollo local (cualquier puerto)
+                "http://localhost:*", // Para desarrollo local (cualquier puerto)
+                "http://s3onlyflans.s3-website-us-east-1.amazonaws.com"
         ));
 
         // 2. Métodos permitidos
