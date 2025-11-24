@@ -95,9 +95,4 @@ public class SecurityConfig {
         // Construye y devuelve el objeto SecurityFilterChain.
         return http.build();
     }
-
-    @Bean
-    public ForwardedHeaderFilter forwardedHeaderFilter() {
-        return new ForwardedHeaderFilter();
-    }
 }
