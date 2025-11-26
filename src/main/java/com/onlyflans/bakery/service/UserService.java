@@ -159,5 +159,13 @@ public class UserService {
         return new SecurityUser(user);
     }
 
+    public UserDTO getUserByEmail(String email){
+        User user = userPersistence.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Usuario con email '" + email + "' no encontrado"
+                ));
+        return UserMapper.toDTO(user);
+    }
+
 
 }

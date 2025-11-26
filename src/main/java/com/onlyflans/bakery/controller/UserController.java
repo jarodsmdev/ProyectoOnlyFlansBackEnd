@@ -63,7 +63,7 @@ public class UserController {
     // GET (usuario por rut)
     @GetMapping("/{rut}")
     // Permite el acceso si el usuario es un ADMIN O si el 'rut' de la ruta coincide con el atributo identificador del usuario autenticado (acceso propio).
-    @PreAuthorize("hasRole('ADMIN') or #rut == authentication.name") 
+    @PreAuthorize("hasRole('ADMIN') or #rut == authentication.name")
     @Operation(summary = "Obtener un usuario especifico.", description = "Obtiene el usuario que se especifica con su rut")
     @ApiResponses(value = {
             @ApiResponse(
@@ -83,51 +83,6 @@ public class UserController {
         UserDTO user = userService.getUser(rut);
         return ResponseEntity.ok(user);
     }
-/* 
-    // POST
-    @PostMapping
-    @Operation(summary = "Crear un nuevo usuario.", description = "Crea un nuevo usuario en la base de datos con la información proporcionada.")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Usuario creado correctamente.",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = User.class),
-                            examples = @ExampleObject(
-                                    name = "Ejemplo de usuario creado",
-                                    value = "{\"rut\": \"19291648-8\", \"nombres\": \"Juan Miguel\", \"apellidos\": \"Perez Aguirre\", \"fechaNacimiento\": \"2001-11-10\", \"email\": \" paguirre@gmail.com\", \"contrasenna\": \"Contraseña123\", \"role\": \"NORMAL\"}"))),
-            @ApiResponse(responseCode = "400", description = "Creacion de usuario inválida. Verifique los datos proporcionados.", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar crear el usuario.", content = @Content)
-    })
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserCreateRequest createRequest) {
-        UserDTO createdUser = userService.createUser(createRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
-*/
-
-/*
-    @PostMapping("/login")
-    @Operation(summary = "Login de usuario.", description = "Verifica las credenciales del usuario para iniciar sesión.")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Usuario autenticado correctamente.",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = User.class),
-                            examples = @ExampleObject(
-                                    name = "Ejemplo de usuario autenticado",
-                                    value = "{\"rut\": \"14295638-8\", \"nombres\": \"Esteban Miguel\", \"apellidos\": \"Farias Castro\", \"fechaNacimiento\": \"1989-04-15\", \"email\": fcastro@gmail.com, \"contrasenna\": \"Contraseña123\", \"role\": \"NORMAL\"}"))),
-            @ApiResponse(responseCode = "401", description = "Credenciales inválidas. No se pudo autenticar al usuario.", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor durante el proceso de autenticación de usuario.", content = @Content)
-    })
-    public ResponseEntity<UserDTO> login(@RequestBody LoginRequest loginRequest){
-        UserDTO userDTO = userService.checkCredentials(loginRequest.email(), loginRequest.password());
-
-        return ResponseEntity.ok(userDTO);
-    }
-*/
 
     // PUT
     @PutMapping("/{rut}")
@@ -228,4 +183,31 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    // GET (usuario por email)
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasRole('ADMIN') or #email == authentication.principal.username") //TODO: Revisar si se puede usar email como acceso propio
+    @Operation(summary = "Obtener un usuario por email.", description = "Obtiene el usuario asociado al email especificado.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuario encontrado correctamente.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class),
+                            examples = @ExampleObject(
+                                    name = "Ejemplo de usuario filtrado por email",
+                                    value = "{\"rut\": \"20881702-K\", \"contrasenna\": \"Contraseña123\", \"nombres\": \"Armando Pleito\", \"apellidos\": \"Delano Fuerte\", \"email\": \"ADelano@gmail.com\", \"role\": \"ADMIN\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "404", description = "No existe un usuario con ese email en la base de datos.", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor al buscar el usuario.", content = @Content)
+    })
+    public ResponseEntity<UserDTO> getUserByEmail(
+            @Parameter(description = "Email del usuario a buscar", required = true, example = "ADelano@gmail.com")
+            @PathVariable String email) {
+
+        UserDTO user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
+    }
 }
