@@ -15,7 +15,7 @@ INSERT INTO products (codigo, categoria, nombre, descripcion, precio, url) VALUE
 INSERT INTO products (codigo, categoria, nombre, descripcion, precio, url) VALUES ('TE001', 'Tortas Especiales', 'Torta Especial de Cumpleaños', 'Diseñada especialmente para celebraciones, personalizable con decoraciones y mensajes únicos.', 55000, 'https://fridolin.com.bo/wp-content/uploads/2020/08/Placa-p-tortas-producto.jpg');
 INSERT INTO products (codigo, categoria, nombre, descripcion, precio, url) VALUES ('TE002', 'Tortas Especiales', 'Torta Especial de Boda', 'Elegante y deliciosa, esta torta está diseñada para ser el centro de atención en cualquier boda.', 60000, 'https://static.wixstatic.com/media/a18991_1867d6ee4e2f45e1b90010c8b9044c19~mv2.jpg/v1/fill/w_520,h_414,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/a18991_1867d6ee4e2f45e1b90010c8b9044c19~mv2.jpg');
 
-INSERT INTO USERS (
+INSERT INTO users (
     rut,
     apellidos,
     contrasenna,
@@ -24,11 +24,11 @@ INSERT INTO USERS (
     nombres,
     user_role
 ) VALUES (
-    '12.345.678-9',
-    'Smith',
+    '12.345.678-7',
+    'Ortega',
     '$2a$10$Q6Jwqe/evBZxG.bDadBVQOZIhXN/RE7.NR/zPA7g557oPBEilismy',
-    'jarod@gmail.com',
+    'andy@gmail.com',
     '1995-06-21',
-    'Jarod',
+    'Andy',
     'ADMIN'
     );
