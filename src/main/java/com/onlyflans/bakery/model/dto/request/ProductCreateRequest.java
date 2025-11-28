@@ -16,16 +16,16 @@ public record ProductCreateRequest(
     @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 3, max = 100)
     String nombre,
-    
+
     @Size(max = 500)
     String descripcion,
 
     @NotNull(message = "El precio es obligatorio")
     @Min(value = 1, message = "El precio debe ser positivo")
-    Integer precio,
+    Integer precio
 
-    @NotBlank(message = "La URL de la imagen es obligatoria")
-    String url
+//    @NotBlank(message = "La URL de la imagen es obligatoria")
+//    String url
 
 ){
 }

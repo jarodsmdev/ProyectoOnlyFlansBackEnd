@@ -3,7 +3,6 @@ package com.onlyflans.bakery.exception;
 import com.onlyflans.bakery.exception.dto.ErrorResponse;
 import com.onlyflans.bakery.exception.dto.FieldErrorDetail;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.coyote.Response;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

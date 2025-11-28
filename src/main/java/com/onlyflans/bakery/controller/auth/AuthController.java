@@ -6,10 +6,15 @@ import com.onlyflans.bakery.model.dto.request.UserCreateRequest;
 import com.onlyflans.bakery.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.catalina.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +32,13 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Registrar un nuevo usuario", description = "Registra un nuevo usuario en la panadería OnlyFlans")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente"),
+            @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente", content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = User.class),
+                examples = @ExampleObject(name = "Ejemplo de registro exitoso",
+                        value = "{\"Rut\": \"12345678-9\", \"nombre\": \"Juan Pérez\", \"email\": \"correo@ejemplo.com\", \"password\": \"contraseña123\"}"
+                )
+            )),
             @ApiResponse(responseCode = "400", description = "Datos inválidos para registrar el usuario"),
             @ApiResponse(responseCode = "409", description = "El usuario ya existe"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar registrar el usuario")

@@ -32,6 +32,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 	<dependencies>
+        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/s3 -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.38.8</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -83,6 +89,12 @@
             <artifactId>oraclepki</artifactId>
             <version>23.3.0.23.09</version>
         </dependency>
+        <!-- Dependencias para MySQL -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
 
 		<!-- Dependencia para documentacion SWAGGER -->
@@ -119,7 +131,6 @@
         </dependency>
 
         <!-- JWT DEPENDENCIES END -->
-
 	</dependencies>
 
 	<build>
