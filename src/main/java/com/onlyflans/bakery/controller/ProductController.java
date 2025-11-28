@@ -167,11 +167,11 @@ public class ProductController {
     })
     public ResponseEntity<ProductDTO> getProductById(
         @Parameter(description = "Codigo del producto para buscar.", required = true, example = "TC001") @PathVariable String codigo){ {
-    
+
         ProductDTO productDTO = productService.getProductById(codigo);
         return ResponseEntity.ok(productDTO);
     }}
-    
+
 
 
     @PutMapping("/{codigo}")
@@ -185,9 +185,9 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar actualizar el producto")
     })
     public ResponseEntity<ProductDTO> updateProduct(
-        @Parameter(description = "Codigo del producto a actualizar.", required = true, example = "TC001") @PathVariable String codigo, 
+        @Parameter(description = "Codigo del producto a actualizar.", required = true, example = "TC001") @PathVariable String codigo,
         @Valid @RequestBody ProductUpdateRequest product) {
-        
+
         ProductDTO updatedProduct = productService.updateProduct(codigo, product);
         return ResponseEntity.ok(updatedProduct);
     }
@@ -196,7 +196,7 @@ public class ProductController {
     @DeleteMapping("/{codigo}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Eliminar un producto", description = "Elimina un producto existente de la panadería OnlyFlans")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Código de producto inválido para eliminar"),
             @ApiResponse(responseCode = "403", description = "Acceso denegado para eliminar el producto"),
@@ -207,7 +207,7 @@ public class ProductController {
         @Parameter(description = "Codigo del producto a eliminar.", required = true, example = "TC001") @PathVariable String codigo){
 
         productService.deleteProduct(codigo);
-        
+
         // Devuelve 204 No Content explícitamente
         return ResponseEntity.noContent().build();
     }
