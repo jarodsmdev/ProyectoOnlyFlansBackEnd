@@ -46,7 +46,7 @@ public class UserController {
                             array = @ArraySchema(schema = @Schema(implementation = User.class)),
                             examples = @ExampleObject(
                                     name = "Ejemplo lista de usuarios",
-                                    value = "[{\"rut\": \"19291648-8\", \"nombres\": \"Juan Miguel\", \"apellidos\": \"Perez Aguirre\", \"fechaNacimiento\": \"2001-11-10\", \"email\": \"juan.perez@gmail.com\", \"contrasenna\": \"Contraseña123\", \"role\": \"NORMAL\"}, {\"rut\": \"21291648-8\", \"nombres\": \"Maria Angela\", \"apellidos\": \"Lopez Soto\", \"fechaNacimiento\": \"1995-05-20\", \"email\": \"maria.lopez@gmail.com\", \"contrasenna\": \"KAqet53_/#\", \"role\": \"NORMAL\"}]"
+                                    value = "[{\"rut\": \"19.291.648-8\", \"nombres\": \"Juan Miguel\", \"apellidos\": \"Perez Aguirre\", \"fechaNacimiento\": \"2001-11-10\", \"email\": \"juan.perez@gmail.com\", \"contrasenna\": \"Contraseña123\", \"role\": \"NORMAL\"}, {\"rut\": \"21291648-8\", \"nombres\": \"Maria Angela\", \"apellidos\": \"Lopez Soto\", \"fechaNacimiento\": \"1995-05-20\", \"email\": \"maria.lopez@gmail.com\", \"contrasenna\": \"KAqet53_/#\", \"role\": \"NORMAL\"}]"
                             )
                     )
             ),
@@ -74,7 +74,7 @@ public class UserController {
                     schema = @Schema(implementation = User.class), 
                     examples = @ExampleObject(
                         name = "Ejemplo de usuario filtrado", 
-                        value = "{\"rut\": 20881702-K, \"contrasenna\": \"Contraseña123\", \"nombres\": \"Armando Pleito\", \"apellidos\": \"Delano Fuerte\", \"email\": \"ADelano@gmail.com\", \"role\": \"ADMIN\"}"))),
+                        value = "{\"rut\": 20.881.702-K, \"contrasenna\": \"Contraseña123\", \"nombres\": \"Armando Pleito\", \"apellidos\": \"Delano Fuerte\", \"email\": \"ADelano@gmail.com\", \"role\": \"ADMIN\"}"))),
             @ApiResponse(responseCode = "404", description = "El Usuario no existe en la base de datos o el rut es incorrecto.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor al buscar el usuario.", content = @Content)
     })
@@ -185,7 +185,7 @@ public class UserController {
 
     // GET (usuario por email)
     @GetMapping("/email/{email}")
-    @PreAuthorize("hasRole('ADMIN') or #email == authentication.principal.username") //TODO: Revisar si se puede usar email como acceso propio
+    @PreAuthorize("hasRole('ADMIN') or #email == authentication.principal.username") 
     @Operation(summary = "Obtener un usuario por email.", description = "Obtiene el usuario asociado al email especificado.")
     @ApiResponses(value = {
             @ApiResponse(
