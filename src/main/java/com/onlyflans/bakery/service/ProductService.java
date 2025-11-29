@@ -27,10 +27,16 @@ public class ProductService {
         this.s3Service = s3Service;
     }
 
+    /*
+    * orderPersistence.findAll() devuelve una List<Product> desde la base de datos.
+    * .stream() convierte esa lista en un flujo.
+    * .map(OrderMapper::toDTO) aplica el método OrderMapper.toDTO() a cada elemento (convierte de entidad a DTO).
+    * .toList() recopila el resultado final como una lista de OrderDTO.
+    * */
     public List<ProductDTO> getAllProducts(){
         return productPersistence.findAll()
                 .stream()
-                .map(ProductMapper::toDTO)
+                .map(ProductMapper::toDTO) // Usar el mapper estático
                 .toList();
     }
 
@@ -48,7 +54,7 @@ public class ProductService {
         // 2. Crear la entidad producto
         // Mapear DTO a la entidad Product
         Product product = new Product();
-
+        
         // Mapear todos los campos del DTO a la Entity
         product.setCodigo(newProduct.codigo());
         product.setCategoria(newProduct.categoria());
@@ -79,7 +85,7 @@ public class ProductService {
                 new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Producto no encontrado"
                 ));
-
+        
         // Aplicar cambios del DTO al Entity existente
         existingProduct.setCategoria(updateProduct.categoria());
         existingProduct.setNombre(updateProduct.nombre());
@@ -88,7 +94,7 @@ public class ProductService {
         existingProduct.setUrl(updateProduct.url()); // Usar los getters del Request DTO
 
         Product updatedEntity = productPersistence.save(existingProduct);
-
+        
         // Devolver el DTO actualizado
         return ProductMapper.toDTO(updatedEntity);
     }
