@@ -172,26 +172,32 @@ public class ProductController {
         return ResponseEntity.ok(productDTO);
     }}
 
-
-
-    @PutMapping("/{codigo}")
+    @PutMapping(value = "/{codigo}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Actualizar un producto existente", description = "Actualiza los detalles de un producto existente en la panadería OnlyFlans")
+    @Operation(
+            summary = "Actualizar un producto existente",
+            description = "Actualiza datos y/o imagen de un producto usando multipart/form-data. Se envía un JSON en la parte 'product' y opcionalmente un archivo en 'file'."
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos para actualizar el producto"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado para actualizar el producto"),
-            @ApiResponse(responseCode = "404", description = "Producto no encontrado para actualizar"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar actualizar el producto")
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ProductDTO> updateProduct(
-        @Parameter(description = "Codigo del producto a actualizar.", required = true, example = "TC001") @PathVariable String codigo,
-        @Valid @RequestBody ProductUpdateRequest product) {
+            @PathVariable String codigo,
+            @RequestPart("product") ProductUpdateRequest product,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
 
-        ProductDTO updatedProduct = productService.updateProduct(codigo, product);
+        ProductDTO updatedProduct = productService.updateProduct(codigo, product, file);
+
         return ResponseEntity.ok(updatedProduct);
     }
-
 
     @DeleteMapping("/{codigo}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -211,6 +217,4 @@ public class ProductController {
         // Devuelve 204 No Content explícitamente
         return ResponseEntity.noContent().build();
     }
-
-
 }
