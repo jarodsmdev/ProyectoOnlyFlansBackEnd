@@ -27,6 +27,12 @@ public class ProductService {
         this.s3Service = s3Service;
     }
 
+    /*
+    * orderPersistence.findAll() devuelve una List<Product> desde la base de datos.
+    * .stream() convierte esa lista en un flujo.
+    * .map(OrderMapper::toDTO) aplica el método OrderMapper.toDTO() a cada elemento (convierte de entidad a DTO).
+    * .toList() recopila el resultado final como una lista de OrderDTO.
+    * */
     public List<ProductDTO> getAllProducts(){
         return productPersistence.findAll()
                 .stream()
@@ -82,6 +88,7 @@ public class ProductService {
         existingProduct.setNombre(updateProduct.nombre());
         existingProduct.setDescripcion(updateProduct.descripcion());
         existingProduct.setPrecio(updateProduct.precio());
+        existingProduct.setUrl(updateProduct.url()); // Usar los getters del Request DTO
 
         // SI hay archivo → subir a S3
         if (file != null && !file.isEmpty()) {

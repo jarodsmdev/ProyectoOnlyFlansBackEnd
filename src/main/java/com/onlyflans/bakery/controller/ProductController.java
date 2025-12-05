@@ -199,6 +199,7 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
+
     @DeleteMapping("/{codigo}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Eliminar un producto", description = "Elimina un producto existente de la panadería OnlyFlans")
