@@ -36,6 +36,11 @@ import java.util.Optional;
 
 import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
+/**
+ * Metodo que se ejecutará una vez por cada petición.
+ * 1. Busca el token JWT en el header
+ * 2. Valida si no está expirado o revocado
+ * 3. Establecer la identidad del usuario dentro del contexto de Spring Security.*/
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -53,11 +58,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull  FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // Si la ruta contiene /auth, se deja pasar, aun no hay token
         if(request.getServletPath().contains("/auth")){
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Buscar el encabezado de autorización
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
@@ -65,6 +72,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Extraer el token JWT del header
         final String jwtToken = authHeader.substring(7);
 
         String userEmail;
@@ -97,11 +105,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Verifica que el usuario esté autenticado
         if(userEmail == null || SecurityContextHolder.getContext().getAuthentication() != null){
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Verificar si el token existe y que no esté expirado o revocado
         final Token token = tokenRepository.findByToken(jwtToken)
                 .orElse(null);
 
@@ -110,6 +120,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Obtener los detalles del usuario
         final UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
         final Optional<User> user = userEntityRepository.findByEmail(userDetails.getUsername());
 
@@ -118,6 +129,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Validacion de token: true si el campo user del token y del usuario son iguales
         final boolean isTokenValid = jwtService.isTokenValid(jwtToken, user.get());
         if(!isTokenValid){
             return;
@@ -132,7 +144,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // CREAR AUTENTICACIÓN CON EL ROL DEL TOKEN
         final UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 userDetails,
-                null,
+                null, // el usuario es validado por el token, no su contraseña
                 List.of(authority)
         );
 

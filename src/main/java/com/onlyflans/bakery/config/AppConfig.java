@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AppConfig {
     private final IUserPersistence userRepository;
 
+    // Funcion para encontrar los datos del usuario al hacer login
     @Bean
     public UserDetailsService userDetailsService(){
         return username -> {
@@ -35,15 +36,16 @@ public class AppConfig {
                     .build();
         };
     }
-
+    
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(userDetailsService()); // para obtener datos de usuario
+        authProvider.setPasswordEncoder(passwordEncoder()); // para verificar las contraseñas
         return authProvider;
     }
 
+    // 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

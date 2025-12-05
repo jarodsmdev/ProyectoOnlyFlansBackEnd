@@ -36,7 +36,7 @@ public class ProductService {
     public List<ProductDTO> getAllProducts(){
         return productPersistence.findAll()
                 .stream()
-                .map(ProductMapper::toDTO) // Usar el mapper estático
+                .map(ProductMapper::toDTO)
                 .toList();
     }
 
@@ -54,7 +54,7 @@ public class ProductService {
         // 2. Crear la entidad producto
         // Mapear DTO a la entidad Product
         Product product = new Product();
-        
+
         // Mapear todos los campos del DTO a la Entity
         product.setCodigo(newProduct.codigo());
         product.setCategoria(newProduct.categoria());
@@ -80,23 +80,24 @@ public class ProductService {
     }
 
     // Actualizar: Recibir Request DTO y Devolver Response DTO
-    public ProductDTO updateProduct(String codigo, ProductUpdateRequest updateProduct) {
-        Product existingProduct = productPersistence.findById(codigo).orElseThrow(() ->
-                new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Producto no encontrado"
-                ));
-        
-        // Aplicar cambios del DTO al Entity existente
+    public ProductDTO updateProduct(String codigo, ProductUpdateRequest updateProduct, MultipartFile file) throws IOException {
+        Product existingProduct = productPersistence.findById(codigo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
+
         existingProduct.setCategoria(updateProduct.categoria());
         existingProduct.setNombre(updateProduct.nombre());
         existingProduct.setDescripcion(updateProduct.descripcion());
         existingProduct.setPrecio(updateProduct.precio());
         existingProduct.setUrl(updateProduct.url()); // Usar los getters del Request DTO
 
-        Product updatedEntity = productPersistence.save(existingProduct);
-        
-        // Devolver el DTO actualizado
-        return ProductMapper.toDTO(updatedEntity);
+        // SI hay archivo → subir a S3
+        if (file != null && !file.isEmpty()) {
+            String url = s3Service.uploadFile(file, "products/" + codigo);
+            existingProduct.setUrl(url);
+        }
+        // SI NO hay archivo → mantener URL original
+
+        return ProductMapper.toDTO(productPersistence.save(existingProduct));
     }
 
     public void deleteProduct(String codigo) {

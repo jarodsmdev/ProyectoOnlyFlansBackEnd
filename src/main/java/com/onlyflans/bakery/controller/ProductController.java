@@ -167,28 +167,35 @@ public class ProductController {
     })
     public ResponseEntity<ProductDTO> getProductById(
         @Parameter(description = "Codigo del producto para buscar.", required = true, example = "TC001") @PathVariable String codigo){ {
-    
+
         ProductDTO productDTO = productService.getProductById(codigo);
         return ResponseEntity.ok(productDTO);
     }}
-    
 
-
-    @PutMapping("/{codigo}")
+    @PutMapping(value = "/{codigo}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Actualizar un producto existente", description = "Actualiza los detalles de un producto existente en la panadería OnlyFlans")
+    @Operation(
+            summary = "Actualizar un producto existente",
+            description = "Actualiza datos y/o imagen de un producto usando multipart/form-data. Se envía un JSON en la parte 'product' y opcionalmente un archivo en 'file'."
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos para actualizar el producto"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado para actualizar el producto"),
-            @ApiResponse(responseCode = "404", description = "Producto no encontrado para actualizar"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor al intentar actualizar el producto")
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ProductDTO> updateProduct(
-        @Parameter(description = "Codigo del producto a actualizar.", required = true, example = "TC001") @PathVariable String codigo, 
-        @Valid @RequestBody ProductUpdateRequest product) {
-        
-        ProductDTO updatedProduct = productService.updateProduct(codigo, product);
+            @PathVariable String codigo,
+            @RequestPart("product") ProductUpdateRequest product,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+
+        ProductDTO updatedProduct = productService.updateProduct(codigo, product, file);
+
         return ResponseEntity.ok(updatedProduct);
     }
 
@@ -196,7 +203,7 @@ public class ProductController {
     @DeleteMapping("/{codigo}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Eliminar un producto", description = "Elimina un producto existente de la panadería OnlyFlans")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Código de producto inválido para eliminar"),
             @ApiResponse(responseCode = "403", description = "Acceso denegado para eliminar el producto"),
@@ -207,10 +214,8 @@ public class ProductController {
         @Parameter(description = "Codigo del producto a eliminar.", required = true, example = "TC001") @PathVariable String codigo){
 
         productService.deleteProduct(codigo);
-        
+
         // Devuelve 204 No Content explícitamente
         return ResponseEntity.noContent().build();
     }
-
-
 }

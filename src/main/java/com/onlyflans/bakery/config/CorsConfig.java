@@ -41,11 +41,13 @@ public class CorsConfig {
         config.setAllowedHeaders(List.of("*"));
 
         // 4. Permitir Authorization header
+        // Ahora el navegador permite que el codigo js acceda al header Authorization
         config.setExposedHeaders(List.of("Authorization"));
 
         // 5. Permitir enviar credenciales (cookies, tokens…)
         config.setAllowCredentials(true);
 
+        // 6. Aplica las configuraciones a todas las rutas
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
